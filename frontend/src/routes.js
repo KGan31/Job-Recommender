@@ -55,6 +55,7 @@ import CustomerSupport from "examples/Icons/CustomerSupport";
 import CreditCard from "examples/Icons/CreditCard";
 import Cube from "examples/Icons/Cube";
 import Form from "layouts/Form";
+import JobPostings from "layouts/job-postings";
 
 const routes = [
   {
@@ -121,6 +122,15 @@ const routes = [
     route: "/form",
     icon: <SpaceShip size="12px" />,
     component: <Form />,
+    noCollapse: true,
+  },
+  {
+    type: "collapse",
+    name: "Job Postings",
+    key: "job-postings",
+    route: "/job-postings",
+    icon: <SpaceShip size="12px" />,
+    component: <JobPostings />,
     noCollapse: true,
   },
 ];
