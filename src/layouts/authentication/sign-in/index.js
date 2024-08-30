@@ -1,19 +1,6 @@
-/**
-=========================================================
-* Soft UI Dashboard React - v4.0.1
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/soft-ui-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
 import { useState } from "react";
+import { useNavigate} from "react-router-dom"; // Import useHistory to manage routing
+import axios from "axios";
 
 // react-router-dom components
 import { Link } from "react-router-dom";
@@ -35,8 +22,31 @@ import curved9 from "assets/images/curved-images/curved-6.jpg";
 
 function SignIn() {
   const [rememberMe, setRememberMe] = useState(true);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate(); // Initialize useHistory for redirection
 
   const handleSetRememberMe = () => setRememberMe(!rememberMe);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post("http://localhost:5000/api/login", {
+        email,
+        password,
+      });
+      
+      if (response.status === 200) {
+        // Redirect to the form page upon successful login
+        navigate('/form')
+      } else {
+        alert(response.data.message);
+      }
+    } catch (error) {
+      console.error("Error logging in:", error);
+      alert("Failed to log in.");
+    }
+  };
 
   return (
     <CoverLayout
@@ -44,14 +54,20 @@ function SignIn() {
       description="Enter your email and password to sign in"
       image={curved9}
     >
-      <SoftBox component="form" role="form">
+      <SoftBox component="form" role="form" onSubmit={handleLogin}>
         <SoftBox mb={2}>
           <SoftBox mb={1} ml={0.5}>
             <SoftTypography component="label" variant="caption" fontWeight="bold">
               Email
             </SoftTypography>
           </SoftBox>
-          <SoftInput type="email" placeholder="Email" />
+          <SoftInput
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
         </SoftBox>
         <SoftBox mb={2}>
           <SoftBox mb={1} ml={0.5}>
@@ -59,7 +75,13 @@ function SignIn() {
               Password
             </SoftTypography>
           </SoftBox>
-          <SoftInput type="password" placeholder="Password" />
+          <SoftInput
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
         </SoftBox>
         <SoftBox display="flex" alignItems="center">
           <Switch checked={rememberMe} onChange={handleSetRememberMe} />
@@ -73,8 +95,8 @@ function SignIn() {
           </SoftTypography>
         </SoftBox>
         <SoftBox mt={4} mb={1}>
-          <SoftButton variant="gradient" color="info" fullWidth>
-            sign in
+          <SoftButton variant="gradient" color="info" fullWidth type="submit">
+            Sign in
           </SoftButton>
         </SoftBox>
         <SoftBox mt={3} textAlign="center">

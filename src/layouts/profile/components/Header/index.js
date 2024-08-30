@@ -26,7 +26,7 @@ import Tab from "@mui/material/Tab";
 import SoftBox from "components/SoftBox";
 import SoftTypography from "components/SoftTypography";
 import SoftAvatar from "components/SoftAvatar";
-
+import EmailIcon from "@mui/icons-material/Email";
 // Soft UI Dashboard React examples
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 
@@ -41,6 +41,7 @@ import breakpoints from "assets/theme/base/breakpoints";
 // Images
 import burceMars from "assets/images/bruce-mars.jpg";
 import curved0 from "assets/images/curved-images/curved0.jpg";
+import { Mail } from "@mui/icons-material";
 
 function Header() {
   const [tabsOrientation, setTabsOrientation] = useState("horizontal");
@@ -120,19 +121,17 @@ function Header() {
               </SoftTypography>
             </SoftBox>
           </Grid>
-          <Grid item xs={12} md={6} lg={4} sx={{ ml: "auto" }}>
-            <AppBar position="static">
-              <Tabs
-                orientation={tabsOrientation}
-                value={tabValue}
-                onChange={handleSetTabValue}
-                sx={{ background: "transparent" }}
-              >
-                <Tab label="App" icon={<Cube />} />
-                <Tab label="Message" icon={<Document />} />
-                <Tab label="Settings" icon={<Settings />} />
-              </Tabs>
-            </AppBar>
+          <Grid
+            item
+            xs={12}
+            md={6}
+            lg={4}
+            sx={{ ml: "auto", display: "flex", alignItems: "center", fontSize: 16 }}
+          >
+            <span style={{ display: "flex", alignItems: "center" }}>
+              <Mail style={{ fontSize: "inherit", marginRight: "8px" }} />
+              xyz@gmail.com
+            </span>
           </Grid>
         </Grid>
       </Card>

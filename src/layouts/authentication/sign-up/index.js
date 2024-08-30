@@ -1,19 +1,6 @@
-/**
-=========================================================
-* Soft UI Dashboard React - v4.0.1
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/soft-ui-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
 import { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
+import axios from "axios";
 
 // react-router-dom components
 import { Link } from "react-router-dom";
@@ -37,9 +24,35 @@ import Separator from "layouts/authentication/components/Separator";
 import curved6 from "assets/images/curved-images/curved14.jpg";
 
 function SignUp() {
-  const [agreement, setAgremment] = useState(true);
+  const [agreement, setAgreement] = useState(true);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
 
-  const handleSetAgremment = () => setAgremment(!agreement);
+  const navigate = useNavigate(); // Initialize useNavigate
+
+  const handleSetAgreement = () => setAgreement(!agreement);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post("http://localhost:5000/api/register", formData);
+      if (response.status === 200) {
+        // Redirect to form page after successful signup
+        navigate("/form");
+      }
+    } catch (error) {
+      console.error("Error during registration:", error);
+      alert("Failed to sign up. Please try again.");
+    }
+  };
 
   return (
     <BasicLayout
@@ -58,23 +71,43 @@ function SignUp() {
         </SoftBox>
         <Separator />
         <SoftBox pt={2} pb={3} px={3}>
-          <SoftBox component="form" role="form">
+          <SoftBox component="form" role="form" onSubmit={handleSubmit}>
             <SoftBox mb={2}>
-              <SoftInput placeholder="Name" />
+              <SoftInput
+                placeholder="Name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
             </SoftBox>
             <SoftBox mb={2}>
-              <SoftInput type="email" placeholder="Email" />
+              <SoftInput
+                type="email"
+                placeholder="Email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
             </SoftBox>
             <SoftBox mb={2}>
-              <SoftInput type="password" placeholder="Password" />
+              <SoftInput
+                type="password"
+                placeholder="Password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
             </SoftBox>
             <SoftBox display="flex" alignItems="center">
-              <Checkbox checked={agreement} onChange={handleSetAgremment} />
+              <Checkbox checked={agreement} onChange={handleSetAgreement} />
               <SoftTypography
                 variant="button"
                 fontWeight="regular"
-                onClick={handleSetAgremment}
-                sx={{ cursor: "poiner", userSelect: "none" }}
+                onClick={handleSetAgreement}
+                sx={{ cursor: "pointer", userSelect: "none" }}
               >
                 &nbsp;&nbsp;I agree the&nbsp;
               </SoftTypography>
@@ -89,7 +122,7 @@ function SignUp() {
               </SoftTypography>
             </SoftBox>
             <SoftBox mt={4} mb={1}>
-              <SoftButton variant="gradient" color="dark" fullWidth>
+              <SoftButton variant="gradient" color="dark" fullWidth type="submit">
                 sign up
               </SoftButton>
             </SoftBox>
