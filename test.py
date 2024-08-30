@@ -33,9 +33,14 @@ return_user = {
     'email': 'jakemahoney@kmail.com',
     'password': 'vjti@123',
 }
+response = requests.post(BASE + 'api/login', json=json.dumps(return_user))
 
-response = requests.post(BASE + 'api/login', json=json.dumps(new_user))
-print(response.json())
+skills = {
+    'skills': ['Python', 'C++', 'GenAI', 'ML']
+}
+response = requests.post(BASE + 'api/add-skills', json=json.dumps(skills))
+if response.status_code == 200:
+    print(response.json())
 
 
 # from pymongo.mongo_client import MongoClient

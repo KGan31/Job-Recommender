@@ -2,14 +2,21 @@ from flask import Flask, request, jsonify, send_file, Response
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from datetime import datetime
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 import json
 import hashlib
 from bson import json_util
+# from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, jwt_required -- later
+from flask import session
+
+id = ""
 
 app = Flask(__name__)
 
-cors = CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
+app.secret_key = b'0392d5f96b458978e5597c44daaa3817bc0124424e2eab1e9024e182bade4b28'
+app.config.update(SESSION_COOKIE_SAMESITE="None", SESSION_COOKIE_SECURE=True)
+
+cors = CORS(app, resources={r"/*": {"origins": "http://localhost/*"}})
 
 uri = "mongodb+srv://vedantnimjed:fRycEHrkwwWDlrQM@cluster0.jmmjy.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
@@ -47,7 +54,9 @@ def register():
         'projects': user_details["projects"],
     }
     
-    db.Users.insert_one(new_user)
+    _id = db.Users.insert_one(new_user)
+    # session['id'] = _id.inserted_id
+    
     response = app.response_class(
         response=json.dumps({"message": "Registered successfully"}),
         status=200,
@@ -57,7 +66,8 @@ def register():
     
 @app.route('/api/login', methods=["POST"])
 def login():
-    user_details = json.loads(request.get_json())
+    user_details = json.loads(request.get_data())
+    print(user_details)
     
     if not user_details["email"] or not user_details["password"]:
         return Response(json.dumps({'message': 'Username and password are required'}),status=400)
@@ -70,6 +80,10 @@ def login():
             status=200,
             mimetype='application/json'
         )
+        # session['id'] = str(user["_id"])
+        # print(session['id'])
+        global id
+        id = user["email"]
         return response
     else:
         # return Response(, status=400) 
@@ -85,5 +99,20 @@ def list_jobs():
     jobs = db.Jobs.find({})
     return json.loads(json_util.dumps(jobs))
 
+@app.route('/api/save-profile', methods=["POST"])
+def add_user_skills():
+    profile_info = json.loads(request.get_data())
+    print(profile_info)
+    global id
+    print(id)
+    db.Users.update_one({"email": id}, {"$set":{"skills": profile_info['skills']['skills'].split(","), "work_ex": profile_info['work_ex']}})
+    
+    response = app.response_class(
+        response=json.dumps({"message": "Skills added"}),
+        status=200,
+        mimetype='application/json'
+    )
+    return response
+    
 if __name__ == '__main__':
     app.run(debug=True)
