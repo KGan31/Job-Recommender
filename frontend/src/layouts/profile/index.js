@@ -13,16 +13,18 @@ import DefaultProjectCard from "examples/Cards/ProjectCards/DefaultProjectCard";
 import PlaceholderCard from "examples/Cards/PlaceholderCard";
 
 function Overview() {
-  const [profileData, setProfileData] = useState(null);
-  const email = "user@example.com"; // replace with actual email from user context or authentication
-
+  const [profileData, setProfileData] = useState({
+    skills: [],
+    work_ex: [],
+    projects: []
+  });
+  //const email = "user@example.com"; // replace with actual email from user context or authentication
+const email = localStorage.getItem('userEmail');
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/profile`); // no need to pass email in api since it is handled in backend 
-        // the only thing is before profile page the user has to login 
-
-        console.log(response);
+        const response = await axios.get(`http://localhost:5000/api/profile/${email}`);
+        console.log("Fetched profile data:", response.data);
         setProfileData(response.data);
       } catch (error) {
         console.error("Error fetching profile data:", error);
@@ -30,9 +32,9 @@ function Overview() {
     };
 
     fetchProfile();
-  }, [email]);
+  }, []);
 
-  if (!profileData) {
+  if (!profileData || !profileData.skills) {
     return <div>Loading...</div>;
   }
 
@@ -45,11 +47,7 @@ function Overview() {
             <SkillsCard
               title="Skills"
               description="A comprehensive overview of my technical expertise including languages, libraries, and frameworks I frequently use."
-              skills={{
-                languages: profileData.skills.languages,
-                libraries: profileData.skills.libraries,
-                frameworks: profileData.skills.frameworks,
-              }}
+              skills={profileData.skills}
               action={{ route: "/edit-skills", tooltip: "Edit Skills" }}
             />
           </Grid>
@@ -57,7 +55,7 @@ function Overview() {
             <WorkExperienceCard
               title="Work Experience"
               description="An overview of my professional journey including roles, responsibilities, and contributions."
-              experiences={profileData.experience}
+              experiences={profileData.work_ex}
               action={{ route: "/edit-experience", tooltip: "Edit Work Experience" }}
             />
           </Grid>
@@ -71,82 +69,41 @@ function Overview() {
                 Projects
               </SoftTypography>
             </SoftBox>
-            <SoftBox mb={1}></SoftBox>
           </SoftBox>
           <SoftBox p={2}>
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={6} xl={3}>
-                <DefaultProjectCard
-                  image={homeDecor1}
-                  label="project #2"
-                 
-                     title="modern"
-                     description="As Uber works through a huge amount of internal management turmoil."
-                     action={{
-                       type: "internal",
-                       route: "/pages/profile/profile-overview",
-                       color: "info",
-                       label: "view project",
-                     }}
-                     authors={[
-                       { image: team1, name: "Elena Morison" },
-                       { image: team2, name: "Ryan Milly" },
-                       { image: team3, name: "Nick Daniel" },
-                       { image: team4, name: "Peterson" },
-                     ]}
-                   />
-                 </Grid>
-                 <Grid item xs={12} md={6} xl={3}>
-                   <DefaultProjectCard
-                     image={homeDecor2}
-                     label="project #1"
-                     title="scandinavian"
-                     description="Music is something that every person has his or her own specific opinion about."
-                     action={{
-                       type: "internal",
-                       route: "/pages/profile/profile-overview",
-                       color: "info",
-                       label: "view project",
-                     }}
-                     authors={[
-                       { image: team3, name: "Nick Daniel" },
-                       { image: team4, name: "Peterson" },
-                       { image: team1, name: "Elena Morison" },
-                       { image: team2, name: "Ryan Milly" },
-                     ]}
-                   />
-                 </Grid>
-                 <Grid item xs={12} md={6} xl={3}>
-                   <DefaultProjectCard
-                     image={homeDecor3}
-                     label="project #3"
-                     title="minimalist"
-                     description="Different people have different taste, and various types of music."
-                     action={{
-                       type: "internal",
-                       route: "/pages/profile/profile-overview",
-                       color: "info",
-                       label: "view project",
-                     }}
-                     authors={[
-                       { image: team4, name: "Peterson" },
-                       { image: team3, name: "Nick Daniel" },
-                       { image: team2, name: "Ryan Milly" },
-                       { image: team1, name: "Elena Morison" },
-                     ]}
-                   />
-                 </Grid>
-                 <Grid item xs={12} md={6} xl={3}>
-                   <PlaceholderCard title={{ variant: "h5", text: "New project" }} outlined />
-                 </Grid>
-               </Grid>
-             </SoftBox>
-           </Card>
-         </SoftBox>
+  <Grid container spacing={3}>
+    {profileData.projects.length > 0 ? (
+      profileData.projects.map((project, index) => (
+        <Grid item xs={12} md={6} xl={3} key={index}>
+          <DefaultProjectCard
+            image="https://res.cloudinary.com/dyxnmjtrg/image/upload/v1687757420/aes1_dbwjjp.png" // Provide a placeholder or default image if needed
+            title={project.projectName}
+            description={project.description}
+            duration={project.duration} // Make sure you pass the duration if it's part of the project data
+            action={{
+              type: "internal",
+              route: "/pages/profile/profile-overview",
+              color: "info",
+              label: "View Project",
+            }}
+          />
+        </Grid>
+      ))
+    ) : (
+      <Grid item xs={12} md={6} xl={3}>
+        <PlaceholderCard title={{ variant: "h5", text: "No projects available" }} outlined />
+      </Grid>
+    )}
+    <Grid item xs={12} md={6} xl={3}>
+      <PlaceholderCard title={{ variant: "h5", text: "New project" }} outlined />
+    </Grid>
+  </Grid>
+</SoftBox>
+        </Card>
+      </SoftBox>
+      <Footer />
+    </DashboardLayout>
+  );
+}
 
-         <Footer />
-       </DashboardLayout>
-     );
-   }
-
-   export default Overview;
+export default Overview;

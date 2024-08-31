@@ -101,21 +101,15 @@ def list_jobs():
     jobs = db.Jobs.find({})
     return json.loads(json_util.dumps(jobs))
 
-@app.route('/api/profile', methods=["GET"])
-def get_profile():
-    global id
-    print(id)
-    user = db.Users.find_one({'email': id})
+@app.route('/api/profile/<string:email>', methods=["GET"])
+def get_user_profile(email):
+    # Query the database for the user with the specified email
+    user = db.Users.find_one({"email": email}, {"_id": 0, "password": 0})  # Exclude sensitive data like password
 
     if user:
-        return json.loads(json_util.dumps(user))
-    else:   
-        response = app.response_class(
-            response=json.dumps({"message": "No such user profile"}),
-            status=402,
-            mimetype='application/json'
-        )
-        return response
+        return jsonify(user), 200
+    else:
+        return jsonify({"error": "User not found"}), 404
 
 @app.route('/api/save-profile', methods=["POST"])
 def add_user_skills():
@@ -123,7 +117,7 @@ def add_user_skills():
     print(profile_info)
     global id
     print(id)
-    db.Users.update_one({"email": id}, {"$set":{"skills": profile_info['skills']['skills'].split(","), "work_ex": profile_info['work_ex']}})
+    db.Users.update_one({"email": id}, {"$set":{"skills": profile_info['skills']['skills'].split(","), "work_ex": profile_info['work_ex'],"projects":profile_info['projects']}})
     
     response = app.response_class(
         response=json.dumps({"message": "Skills added"}),
@@ -131,6 +125,5 @@ def add_user_skills():
         mimetype='application/json'
     )
     return response
-    
 if __name__ == '__main__':
     app.run(debug=True)

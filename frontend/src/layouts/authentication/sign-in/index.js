@@ -46,6 +46,7 @@ function SignIn() {
       
       if (response.status === 200) {
         // Redirect to the form page upon successful login
+         localStorage.setItem('userEmail', email);
         navigate('/form')
       } else {
         alert(response.data.message);

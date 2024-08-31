@@ -7,7 +7,6 @@ import SoftBox from "components/SoftBox";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
-import DefaultBlogCard from "examples/Cards/BlogCards/DefaultBlogCard";
 import "./form.css";
 
 const UserProfileForm = () => {
@@ -19,6 +18,7 @@ const UserProfileForm = () => {
   });
   const [skills, setSkills] = useState("");
   const [experience, setExperience] = useState([{ jobTitle: "", duration: "", description: "" }]);
+  const [projects, setProjects] = useState([{ projectName: "", duration: "", description: "" }]);
 
   const handleProfileChange = (e) => {
     setProfile({ ...profile, [e.target.name]: e.target.value });
@@ -40,22 +40,34 @@ const UserProfileForm = () => {
     setExperience([...experience, { jobTitle: "", duration: "", description: "" }]);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const data = {
-      // profile,
-      skills: skills,
-      work_ex: experience,
-    };
-
-    try {
-      await axios.post("http://localhost:5000/api/save-profile", data);
-      alert("Data saved successfully!");
-    } catch (error) {
-      console.error("Error saving data:", error);
-      alert("Failed to save data.");
-    }
+  const handleProjectChange = (index, e) => {
+    const updatedProjects = projects.map((project, i) =>
+      i === index ? { ...project, [e.target.name]: e.target.value } : project
+    );
+    setProjects(updatedProjects);
   };
+
+  const handleAddProject = () => {
+    setProjects([...projects, { projectName: "", duration: "", description: "" }]);
+  };
+
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  const data = {
+    skills: skills,  // Assuming `skills` is a string
+    work_ex: experience,
+    projects: projects,
+  };
+
+  try {
+    await axios.post("http://localhost:5000/api/save-profile", data);
+    alert("Data saved successfully!");
+  } catch (error) {
+    console.error("Error saving data:", error);
+    alert("Failed to save data.");
+  }
+};
+
 
   return (
     <DashboardLayout>
@@ -64,7 +76,7 @@ const UserProfileForm = () => {
         <SoftBox mb={3}>
           <div className="form-container">
             <form onSubmit={handleSubmit}>
-              <div className="card">
+              {/* <div className="card">
                 <h2>Profile Information</h2>
                 <input
                   type="text"
@@ -94,7 +106,7 @@ const UserProfileForm = () => {
                   onChange={handleProfileChange}
                   // required
                 />
-              </div>
+              </div> */}
 
               <div className="card">
                 <h2>Skills</h2>
@@ -137,6 +149,40 @@ const UserProfileForm = () => {
                 ))}
                 <button type="button" onClick={handleAddExperience}>
                   Add Another Experience
+                </button>
+              </div>
+
+              <div className="card">
+                <h2>Projects</h2>
+                {projects.map((project, index) => (
+                  <div key={index} className="project-entry">
+                    <input
+                      type="text"
+                      name="projectName"
+                      placeholder="Project Name"
+                      value={project.projectName}
+                      onChange={(e) => handleProjectChange(index, e)}
+                      required
+                    />
+                    <input
+                      type="text"
+                      name="duration"
+                      placeholder="Duration (e.g., Jan 2020 - Present)"
+                      value={project.duration}
+                      onChange={(e) => handleProjectChange(index, e)}
+                      required
+                    />
+                    <textarea
+                      name="description"
+                      placeholder="Project Description"
+                      value={project.description}
+                      onChange={(e) => handleProjectChange(index, e)}
+                      required
+                    ></textarea>
+                  </div>
+                ))}
+                <button type="button" onClick={handleAddProject}>
+                  Add Another Project
                 </button>
               </div>
 

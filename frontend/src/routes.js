@@ -67,26 +67,27 @@ const routes = [
     component: <Dashboard />,
     noCollapse: true,
   },
-  {
-    type: "collapse",
-    name: "Tables",
-    key: "tables",
-    route: "/tables",
-    icon: <Office size="12px" />,
-    component: <Tables />,
-    noCollapse: true,
-  },
 
-  {
+
+{
     type: "collapse",
-    name: "Virtual Reality",
-    key: "virtual-reality",
-    route: "/virtual-reality",
+    name: "Form",
+    key: "Form",
+    route: "/form",
     icon: <Cube size="12px" />,
-    component: <VirtualReality />,
+    component: <Form />,
     noCollapse: true,
   },
-
+    
+  {
+    type: "collapse",
+    name: "Job Postings",
+    key: "job-postings",
+    route: "/job-postings",
+    icon: <Office size="12px" />,
+    component: <JobPostings />,
+    noCollapse: true,
+  },
   { type: "title", title: "Account Pages", key: "account-pages" },
   {
     type: "collapse",
@@ -115,24 +116,7 @@ const routes = [
     component: <SignUp />,
     noCollapse: true,
   },
-  {
-    type: "collapse",
-    name: "Form",
-    key: "Form",
-    route: "/form",
-    icon: <SpaceShip size="12px" />,
-    component: <Form />,
-    noCollapse: true,
-  },
-  {
-    type: "collapse",
-    name: "Job Postings",
-    key: "job-postings",
-    route: "/job-postings",
-    icon: <SpaceShip size="12px" />,
-    component: <JobPostings />,
-    noCollapse: true,
-  },
+
 ];
 
 export default routes;
