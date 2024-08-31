@@ -33,7 +33,8 @@ db = client.job_recommend
     
 @app.route('/api/register', methods=["POST"])
 def register():
-    user_details = json.loads(request.get_json())
+    json_string = request.get_data(as_text=True)
+    user_details = json.loads(json_string)
     print(user_details["email"])
     
     if db.Users.find_one({'email': user_details["email"]}):
@@ -49,9 +50,9 @@ def register():
         'email': user_details["email"],
         'name': user_details["name"],
         'password': hashlib.sha256(user_details["password"].encode('utf-8')).hexdigest(),
-        'skills': user_details["skills"],
-        'work_ex': user_details["work_ex"],
-        'projects': user_details["projects"],
+        'skills': user_details["skills"] if "skills" in user_details else [],
+        'work_ex': user_details["work_ex"] if "work_ex" in user_details else [],
+        'projects': user_details["projects"] if "projects" in user_details else [],
     }
     
     _id = db.Users.insert_one(new_user)
@@ -84,6 +85,7 @@ def login():
         # print(session['id'])
         global id
         id = user["email"]
+        print(id)
         return response
     else:
         # return Response(, status=400) 
@@ -98,6 +100,22 @@ def login():
 def list_jobs():
     jobs = db.Jobs.find({})
     return json.loads(json_util.dumps(jobs))
+
+@app.route('/api/profile', methods=["GET"])
+def get_profile():
+    global id
+    print(id)
+    user = db.Users.find_one({'email': id})
+
+    if user:
+        return json.loads(json_util.dumps(user))
+    else:   
+        response = app.response_class(
+            response=json.dumps({"message": "No such user profile"}),
+            status=402,
+            mimetype='application/json'
+        )
+        return response
 
 @app.route('/api/save-profile', methods=["POST"])
 def add_user_skills():

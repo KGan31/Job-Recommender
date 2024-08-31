@@ -23,13 +23,17 @@ import Separator from "layouts/authentication/components/Separator";
 // Images
 import curved6 from "assets/images/curved-images/curved14.jpg";
 
+const headers = {
+  'Access-Control-Allow-Origin': true,
+  'Content-Type': 'application/json',
+  'Accept':'application/json'
+}
+
 function SignUp() {
   const [agreement, setAgreement] = useState(true);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("");
 
   const navigate = useNavigate(); // Initialize useNavigate
 
@@ -43,10 +47,16 @@ function SignUp() {
     e.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost:5000/api/register", formData);
+      console.log(name, email, password);
+      const data = {
+        "name": name,
+        "email": email,
+        "password": password
+      }
+      const response = await axios.post('http://localhost:5000/api/register', JSON.stringify(data), {headers:headers})
       if (response.status === 200) {
         // Redirect to form page after successful signup
-        navigate("/form");
+        navigate("/authentication/sign-in");
       }
     } catch (error) {
       console.error("Error during registration:", error);
@@ -76,8 +86,8 @@ function SignUp() {
               <SoftInput
                 placeholder="Name"
                 name="name"
-                value={formData.name}
-                onChange={handleChange}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 required
               />
             </SoftBox>
@@ -86,8 +96,8 @@ function SignUp() {
                 type="email"
                 placeholder="Email"
                 name="email"
-                value={formData.email}
-                onChange={handleChange}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </SoftBox>
@@ -96,8 +106,8 @@ function SignUp() {
                 type="password"
                 placeholder="Password"
                 name="password"
-                value={formData.password}
-                onChange={handleChange}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </SoftBox>

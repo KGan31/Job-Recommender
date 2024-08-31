@@ -19,7 +19,10 @@ function Overview() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/get-profile/${email}`);
+        const response = await axios.get(`http://localhost:5000/api/profile`); // no need to pass email in api since it is handled in backend 
+        // the only thing is before profile page the user has to login 
+
+        console.log(response);
         setProfileData(response.data);
       } catch (error) {
         console.error("Error fetching profile data:", error);

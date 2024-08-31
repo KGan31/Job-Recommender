@@ -12,7 +12,6 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DefaultBlogCard from "examples/Cards/BlogCards/DefaultBlogCard";
 import "./job-postings.css"
-import { getJSONTypes } from "ajv/dist/compile/validate/dataType";
 
 function JobPostings() {
     const [jobs, setJobs] = useState([]);
@@ -35,12 +34,13 @@ function JobPostings() {
           <Grid container spacing={3}>
             {jobs.length > 0 && (
                 jobs.map((job, index) => (
-                    <Grid item xs={12} sm={6} xl={4} className="job-card" key={index}>
+                    <Grid item xs={12} sm={6} xl={4}  key={index}>
                         <DefaultBlogCard 
-                            image="https://upload.wikimedia.org/wikipedia/commons/1/18/Zeta_Services_logo.png"
+                            image={job.image_link}
                             title={job.title}
                             description={job.Description.slice(0,200) + '...'} 
                             action="internal"
+                            style={{"height": "500px"}}
                         />
                     </Grid>  
                 ))
