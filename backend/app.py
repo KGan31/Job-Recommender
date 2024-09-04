@@ -8,6 +8,26 @@ import hashlib
 from bson import json_util
 # from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, jwt_required -- later
 from flask import session
+import google.generativeai as genai
+
+
+GEMINI_API_KEY = 'AIzaSyD7c4ZO6Y91WpU7VxOrjtejItUTrmYxScM'
+# GOOGLE_GEMINI_ENDPOINT = 'https://gemini.googleapis.com/v1beta/'
+genai.configure(api_key=GEMINI_API_KEY)
+generation_config = {
+  "temperature": 1,
+  "top_p": 0.95,
+  "top_k": 64,
+  "max_output_tokens": 8192,
+  "response_mime_type": "application/json",
+}
+
+model = genai.GenerativeModel(
+  model_name="gemini-1.5-flash",
+  generation_config=generation_config,
+  # safety_settings = Adjust safety settings
+  # See https://ai.google.dev/gemini-api/docs/safety-settings
+)
 
 id = ""
 
@@ -98,8 +118,23 @@ def login():
     
 @app.route('/api/jobs', methods=["GET"])
 def list_jobs():
-    jobs = db.Jobs.find({})
-    return json.loads(json_util.dumps(jobs))
+    jobs = json.loads(json_util.dumps(db.Jobs.find({})))
+    
+    def sorter(job):
+        try:
+            # pprint(job)
+            return len(set(job["skills_req"]).intersection(set(user_skills)))
+        except:
+            return 0
+    
+    user_skills = db.Users.find_one({"email": id})["skills"]
+    
+    jobs.sort(key=sorter, reverse=True)
+    
+    print(user_skills)
+    print([job["skills_req"] for job in jobs])
+    
+    return jobs
 
 @app.route('/api/profile/<string:email>', methods=["GET"])
 def get_user_profile(email):
@@ -117,7 +152,17 @@ def add_user_skills():
     print(profile_info)
     global id
     print(id)
-    db.Users.update_one({"email": id}, {"$set":{"skills": profile_info['skills']['skills'].split(","), "work_ex": profile_info['work_ex'],"projects":profile_info['projects']}})
+    
+    project_descriptions = [proj.get('description', '') for proj in profile_info['projects']]
+    work_descriptions = [work.get('description', '') for work in profile_info['work_ex']]
+    combined_data = "Projects: " + " ".join(project_descriptions) + " Work Experience: " + " ".join(work_descriptions)
+    prompt = combined_data + " " + "\n" + "Give a list of core skills used in these projects. Do not go overboard with it. Output in format like {skills: [python, cpp]}"
+    response = model.generate_content(prompt)
+    res = json.loads(response.text)
+    skills =  list(set(profile_info['skills']['skills'].split(",") + res['skills']))
+    print(skills)
+    
+    db.Users.update_one({"email": id}, {"$set":{"skills": skills, "work_ex": profile_info['work_ex'],"projects":profile_info['projects']}})
     
     response = app.response_class(
         response=json.dumps({"message": "Skills added"}),
