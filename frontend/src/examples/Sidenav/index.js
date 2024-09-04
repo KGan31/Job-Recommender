@@ -149,7 +149,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
             sx={(theme) => sidenavLogoLabel(theme, { miniSidenav })}
           >
             <SoftTypography component="h6" variant="button" fontWeight="medium">
-              {brandName}
+              EmployAI
             </SoftTypography>
           </SoftBox>
         </SoftBox>

@@ -30,7 +30,7 @@ import SoftTypography from "components/SoftTypography";
 function Footer() {
   return (
     <SoftBox component="footer" py={6}>
-      <Grid container justifyContent="center">
+      {/* <Grid container justifyContent="center">
         <Grid item xs={10} lg={8}>
           <SoftBox display="flex" justifyContent="center" flexWrap="wrap" mb={3}>
             <SoftBox mr={{ xs: 2, lg: 3, xl: 6 }}>
@@ -89,7 +89,7 @@ function Footer() {
             Copyright &copy; 2021 Soft by Creative Tim.
           </SoftTypography>
         </Grid>
-      </Grid>
+      </Grid> */}
     </SoftBox>
   );
 }

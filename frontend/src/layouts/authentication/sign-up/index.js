@@ -24,15 +24,15 @@ import Separator from "layouts/authentication/components/Separator";
 import curved6 from "assets/images/curved-images/curved14.jpg";
 
 const headers = {
-  'Access-Control-Allow-Origin': true,
-  'Content-Type': 'application/json',
-  'Accept':'application/json'
-}
+  "Access-Control-Allow-Origin": true,
+  "Content-Type": "application/json",
+  Accept: "application/json",
+};
 
 function SignUp() {
   const [agreement, setAgreement] = useState(true);
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("")
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate(); // Initialize useNavigate
@@ -49,11 +49,15 @@ function SignUp() {
     try {
       console.log(name, email, password);
       const data = {
-        "name": name,
-        "email": email,
-        "password": password
-      }
-      const response = await axios.post('http://localhost:5000/api/register', JSON.stringify(data), {headers:headers})
+        name: name,
+        email: email,
+        password: password,
+      };
+      const response = await axios.post(
+        "http://localhost:5000/api/register",
+        JSON.stringify(data),
+        { headers: headers }
+      );
       if (response.status === 200) {
         // Redirect to form page after successful signup
         navigate("/authentication/sign-in");
@@ -67,19 +71,26 @@ function SignUp() {
   return (
     <BasicLayout
       title="Welcome!"
-      description="Use these awesome forms to login or create new account in your project for free."
+      description="One stop destination to all your career related worries."
       image={curved6}
     >
-      <Card>
+      <Card
+        style={{
+          width: 450,
+          margin: "-30px auto 0 auto",
+          marginLeft: "-110px",
+
+          alignSelf: "center",
+          alignSelf: "center",
+          flexDirection: "column",
+        }}
+      >
         <SoftBox p={3} mb={1} textAlign="center">
           <SoftTypography variant="h5" fontWeight="medium">
             Register with
           </SoftTypography>
         </SoftBox>
-        <SoftBox mb={2}>
-          <Socials />
-        </SoftBox>
-        <Separator />
+
         <SoftBox pt={2} pb={3} px={3}>
           <SoftBox component="form" role="form" onSubmit={handleSubmit}>
             <SoftBox mb={2}>

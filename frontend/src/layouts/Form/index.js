@@ -52,29 +52,37 @@ const UserProfileForm = () => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  const data = {
-    skills: skills,  // Assuming `skills` is a string
-    work_ex: experience,
-    projects: projects,
+    e.preventDefault();
+    const data = {
+      skills: skills, // Assuming `skills` is a string
+      work_ex: experience,
+      projects: projects,
+    };
+
+    try {
+      await axios.post("http://localhost:5000/api/save-profile", data);
+      alert("Data saved successfully!");
+    } catch (error) {
+      console.error("Error saving data:", error);
+      alert("Failed to save data.");
+    }
   };
-
-  try {
-    await axios.post("http://localhost:5000/api/save-profile", data);
-    alert("Data saved successfully!");
-  } catch (error) {
-    console.error("Error saving data:", error);
-    alert("Failed to save data.");
-  }
-};
-
 
   return (
     <DashboardLayout>
       <DashboardNavbar />
       <SoftBox py={3} style={{ "min-height": "100vh" }}>
         <SoftBox mb={3}>
-          <div className="form-container">
+          <div
+            className="form-container"
+            style={{
+              backgroundImage:
+                "url('https://res.cloudinary.com/dyxnmjtrg/image/upload/v1725120113/FORM-555-removebg-preview_eh9onv.png')",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              minHeight: "100vh",
+            }}
+          >
             <form onSubmit={handleSubmit}>
               {/* <div className="card">
                 <h2>Profile Information</h2>

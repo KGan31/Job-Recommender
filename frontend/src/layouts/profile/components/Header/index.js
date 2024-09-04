@@ -14,7 +14,7 @@ import breakpoints from "assets/theme/base/breakpoints";
 function Header() {
   const [tabsOrientation, setTabsOrientation] = useState("horizontal");
   const [tabValue, setTabValue] = useState(0);
-  const [profileInfo, setProfileInfo] = useState({ name: '', email: '' }); // Initialize state
+  const [profileInfo, setProfileInfo] = useState({ name: "", email: "" }); // Initialize state
 
   useEffect(() => {
     function handleTabsOrientation() {
@@ -28,7 +28,7 @@ function Header() {
 
     return () => window.removeEventListener("resize", handleTabsOrientation);
   }, []);
-const email = localStorage.getItem('userEmail');
+  const email = localStorage.getItem("userEmail");
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -89,10 +89,11 @@ const email = localStorage.getItem('userEmail');
           <Grid item>
             <SoftBox height="100%" mt={0.5} lineHeight={1}>
               <SoftTypography variant="h5" fontWeight="medium">
-                {profileInfo.name || "Name not available"} {/* Handle case where name might not be available */}
+                {profileInfo.name || "Name not available"}{" "}
+                {/* Handle case where name might not be available */}
               </SoftTypography>
               <SoftTypography variant="button" color="text" fontWeight="medium">
-                CEO / Co-Founder
+                Student
               </SoftTypography>
             </SoftBox>
           </Grid>
@@ -105,7 +106,8 @@ const email = localStorage.getItem('userEmail');
           >
             <span style={{ display: "flex", alignItems: "center" }}>
               <Mail style={{ fontSize: "inherit", marginRight: "8px" }} />
-              {profileInfo.email || "Email not available"} {/* Handle case where email might not be available */}
+              {profileInfo.email || "Email not available"}{" "}
+              {/* Handle case where email might not be available */}
             </span>
           </Grid>
         </Grid>

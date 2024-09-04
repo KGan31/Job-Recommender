@@ -16,10 +16,10 @@ function Overview() {
   const [profileData, setProfileData] = useState({
     skills: [],
     work_ex: [],
-    projects: []
+    projects: [],
   });
   //const email = "user@example.com"; // replace with actual email from user context or authentication
-const email = localStorage.getItem('userEmail');
+  const email = localStorage.getItem("userEmail");
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -71,34 +71,37 @@ const email = localStorage.getItem('userEmail');
             </SoftBox>
           </SoftBox>
           <SoftBox p={2}>
-  <Grid container spacing={3}>
-    {profileData.projects.length > 0 ? (
-      profileData.projects.map((project, index) => (
-        <Grid item xs={12} md={6} xl={3} key={index}>
-          <DefaultProjectCard
-            image="https://res.cloudinary.com/dyxnmjtrg/image/upload/v1687757420/aes1_dbwjjp.png" // Provide a placeholder or default image if needed
-            title={project.projectName}
-            description={project.description}
-            duration={project.duration} // Make sure you pass the duration if it's part of the project data
-            action={{
-              type: "internal",
-              route: "/pages/profile/profile-overview",
-              color: "info",
-              label: "View Project",
-            }}
-          />
-        </Grid>
-      ))
-    ) : (
-      <Grid item xs={12} md={6} xl={3}>
-        <PlaceholderCard title={{ variant: "h5", text: "No projects available" }} outlined />
-      </Grid>
-    )}
-    <Grid item xs={12} md={6} xl={3}>
-      <PlaceholderCard title={{ variant: "h5", text: "New project" }} outlined />
-    </Grid>
-  </Grid>
-</SoftBox>
+            <Grid container spacing={3}>
+              {profileData.projects.length > 0 ? (
+                profileData.projects.map((project, index) => (
+                  <Grid item xs={12} md={6} xl={3} key={index}>
+                    <DefaultProjectCard
+                      image="https://res.cloudinary.com/dyxnmjtrg/image/upload/v1687757420/aes1_dbwjjp.png" // Provide a placeholder or default image if needed
+                      title={project.projectName}
+                      description={project.description}
+                      duration={project.duration} // Make sure you pass the duration if it's part of the project data
+                      action={{
+                        type: "internal",
+                        route: "/pages/profile/profile-overview",
+                        color: "info",
+                        label: "View Project",
+                      }}
+                    />
+                  </Grid>
+                ))
+              ) : (
+                <Grid item xs={12} md={6} xl={3}>
+                  <PlaceholderCard
+                    title={{ variant: "h5", text: "No projects available" }}
+                    outlined
+                  />
+                </Grid>
+              )}
+              <Grid item xs={12} md={6} xl={3}>
+                <PlaceholderCard title={{ variant: "h5", text: "New project" }} outlined />
+              </Grid>
+            </Grid>
+          </SoftBox>
         </Card>
       </SoftBox>
       <Footer />
