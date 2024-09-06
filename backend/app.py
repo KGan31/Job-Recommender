@@ -208,15 +208,15 @@ def list_jobs():
     print(user_skills)
     print([job["skills_req"] for job in jobs])
     
-    return jobs
+    return jsonify({"jobs": jobs, "user_skills": user_skills})
 
 @app.route('/api/profile/<string:email>', methods=["GET"])
 def get_user_profile(email):
     # Query the database for the user with the specified email
-    user = db.Users.find_one({"email": email}, {"_id": 0, "password": 0})  # Exclude sensitive data like password
+    user = db.Users.find_one({"email": email})  # Exclude sensitive data like password
 
     if user:
-        return jsonify(user), 200
+        return json.loads(json_util.dumps(user)), 200
     else:
         return jsonify({"error": "User not found"}), 404
 
@@ -244,6 +244,25 @@ def add_user_skills():
         mimetype='application/json'
     )
     return response
+
+@app.route('/api/recommend-course', methods=["GET"])
+def getCourses():
+    skills = request.args.getlist('skills')
+    res = []
+
+    for s in skills:
+        c = db.Courses.find({"skill": s.lower()})
+        res.append(json.loads(json_util.dumps(c)))
+
+    print(res)
+
+    response = app.response_class(
+        response=json.dumps({"recommendation": res}),
+        status=200,
+        mimetype='application/json'
+    )
+    return response
+
 
 @app.route('/api/aspirations', methods=["POST"])
 def get_courses_from_aspirations():

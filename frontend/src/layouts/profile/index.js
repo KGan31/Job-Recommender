@@ -12,6 +12,12 @@ import SoftTypography from "components/SoftTypography";
 import DefaultProjectCard from "examples/Cards/ProjectCards/DefaultProjectCard";
 import PlaceholderCard from "examples/Cards/PlaceholderCard";
 
+const headers = {
+  'Access-Control-Allow-Origin': true,
+  'Content-Type': 'application/json',
+  'Accept':'application/json'
+}
+
 function Overview() {
   const [profileData, setProfileData] = useState({
     skills: [],
@@ -23,7 +29,7 @@ function Overview() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/profile/${email}`);
+        const response = await axios.get(`http://localhost:5000/api/profile/${email}`, headers);
         console.log("Fetched profile data:", response.data);
         setProfileData(response.data);
       } catch (error) {

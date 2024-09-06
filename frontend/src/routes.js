@@ -56,6 +56,8 @@ import CreditCard from "examples/Icons/CreditCard";
 import Cube from "examples/Icons/Cube";
 import Form from "layouts/Form";
 import JobPostings from "layouts/job-postings";
+import RecommendCourses from "layouts/recommend-courses";
+import Aspirations from "layouts/aspirations";
 
 const routes = [
   {
@@ -86,6 +88,24 @@ const routes = [
     route: "/job-postings",
     icon: <Office size="12px" />,
     component: <JobPostings />,
+    noCollapse: true,
+  },
+  {
+    type: "collapse",
+    name: "Recommend Courses",
+    key: "recommend-courses",
+    route: "/recommend-courses",
+    icon: <Office size="12px" />,
+    component: <RecommendCourses />,
+    noCollapse: true,
+  },
+  {
+    type: "collapse",
+    name: "Aspirations",
+    key: "aspirations",
+    route: "/aspirations",
+    icon: <Office size="12px" />,
+    component: <Aspirations />,
     noCollapse: true,
   },
   { type: "title", title: "Account Pages", key: "account-pages" },
