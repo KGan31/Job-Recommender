@@ -9,11 +9,11 @@ from bson import json_util
 # from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, jwt_required -- later
 from flask import session
 import google.generativeai as genai
-from model.recommend import recommend_courses, model, df
+# from model.recommend import recommend_courses, model, df
 import pandas as pd
 from sentence_transformers import SentenceTransformer, util
 
-def get_similarity(model, prompt, essays):
+def get_similarity(model2, prompt, essays):
     """
     Calculates the cosine similarity between a prompt and multiple essays using a pre-trained sentence transformer model.
 
@@ -25,14 +25,14 @@ def get_similarity(model, prompt, essays):
     Returns:
     - list of float: The cosine similarity scores for each essay.
     """
-    prompt_embedding = model.encode(prompt, convert_to_tensor=True)
-    essay_embeddings = model.encode(essays, convert_to_tensor=True)
+    prompt_embedding = model2.encode(prompt, convert_to_tensor=True)
+    essay_embeddings = model2.encode(essays, convert_to_tensor=True)
 
     similarity_scores = util.pytorch_cos_sim(prompt_embedding, essay_embeddings).cpu().numpy().flatten()
 
     return similarity_scores
 
-def recommend_courses(user_aspiration, model, df):
+def recommend_courses(user_aspiration, model2, df):
     """
     Recommends the top 5 courses based on the user's aspiration.
 
@@ -49,7 +49,7 @@ def recommend_courses(user_aspiration, model, df):
     df = df.drop_duplicates()
 
     # Get similarity scores for all course names
-    similarity_scores = get_similarity(model, user_aspiration, df["Course Name"].tolist())
+    similarity_scores = get_similarity(model2, user_aspiration, df["Course Name"].tolist())
 
     # Add similarity scores to the DataFrame
     df["Similarity Score"] = similarity_scores
@@ -80,7 +80,7 @@ def recommend_courses(user_aspiration, model, df):
     return recommendations
 
 # Load the model once
-model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
+model2 = SentenceTransformer('paraphrase-MiniLM-L6-v2')
 
 # Load data
 df = pd.read_csv("../assets/data/courses.csv")
@@ -250,10 +250,10 @@ def get_courses_from_aspirations():
     user_aspiration = json.loads(request.get_data())['aspiration']
 
     # Get recommendations
-    recommended_courses = recommend_courses(user_aspiration, model, df)
+    recommended_courses = recommend_courses(user_aspiration, model2, df)
 
     # Print recommendations
-    return json.loads({"courses": recommend_courses})
+    return jsonify({"courses": recommended_courses})
 
 if __name__ == '__main__':
     app.run(debug=True)
