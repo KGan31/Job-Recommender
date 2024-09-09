@@ -12,18 +12,24 @@ function JobPostings() {
   const [selectedJob, setSelectedJob] = useState(null);
   const [missingSkills, setMissingSkills] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const profileSkills = ["React", "Node", "Express", "Springboot"]; // Replace with actual skills from profile
+  const [profileSkills, setProfileSkills] = useState([]); // Replace with actual skills from profile
 
   useEffect(() => {
     const getJobs = async () => {
       const res = await axios.get("http://localhost:5000/api/jobs");
-      setJobs(res.data);
+      setJobs(res.data.jobs);
+      const temp = res.data.user_skills;
+      temp.filter(skill => skill.toLowerCase());
+      setProfileSkills(temp);
+      console.log(res)
     };
     getJobs();
   }, []);
 
   const handleJobClick = (job) => {
-    const missing = job.skills_req.filter((skill) => !profileSkills.includes(skill));
+    const missing = job.skills_req.filter((skill) => !profileSkills.includes(skill.toLowerCase()));
+    console.log(profileSkills);
+    console.log(missing);
     setSelectedJob(job);
     setMissingSkills(missing);
     setIsModalOpen(true);

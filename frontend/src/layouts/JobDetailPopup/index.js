@@ -4,8 +4,15 @@ import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
+import { useNavigate } from "react-router-dom";
 
 function JobDetailPopup({ open, onClose, job, missingSkills }) {
+  const navigate = useNavigate();
+  const handleClick = () => {
+    localStorage.setItem('skills', JSON.stringify(missingSkills));
+    navigate('/recommend-courses');
+  }
+
   return (
     <Modal
       open={open}
@@ -54,9 +61,21 @@ function JobDetailPopup({ open, onClose, job, missingSkills }) {
         <Typography variant="body2" mb={2} color="text.primary">
           {job.Description}
         </Typography>
-        <Typography variant="h6" mt={2} mb={1} color="text.primary">
-          Missing Skills
-        </Typography>
+        <div style={{display : "flex", justifyContent: "start", gap: "16px"}}>
+          <Typography variant="h6" mt={2} mb={1} color="text.primary">
+            Missing Skills
+          </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ mt: 1 }}
+            style={{ color: "#ffffff" }}
+            onClick={() => handleClick()}
+          >
+            Recommend Courses
+          </Button>
+        </div>
+    
         {missingSkills.length > 0 ? (
           <ul style={{ paddingLeft: 20, marginBottom: 0 }}>
             {missingSkills.map((skill, index) => (
