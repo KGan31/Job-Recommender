@@ -1,45 +1,22 @@
+import ast
 import pandas as pd
 from sentence_transformers import SentenceTransformer, util
+from sklearn.metrics.pairwise import cosine_similarity
 
-def get_similarity(model, prompt, essays):
+def get_similarity(model, aspiration, course_embeddings):
     """
-    Calculates the cosine similarity between a prompt and multiple essays using a pre-trained sentence transformer model.
-
-    Args:
-    - model (SentenceTransformer): The pre-trained sentence transformer model.
-    - prompt (str): The prompt text.
-    - essays (list of str): The list of essay texts.
-
-    Returns:
-    - list of float: The cosine similarity scores for each essay.
+    Calculates the cosine similarity between a prompt and courses
     """
-    prompt_embedding = model.encode(prompt, convert_to_tensor=True)
-    essay_embeddings = model.encode(essays, convert_to_tensor=True)
-
-    similarity_scores = util.pytorch_cos_sim(prompt_embedding, essay_embeddings).cpu().numpy().flatten()
-
+    prompt_embedding = model.encode(aspiration, convert_to_tensor=True)
+    similarity_scores = cosine_similarity([prompt_embedding], course_embeddings).flatten()
     return similarity_scores
 
 def recommend_courses(user_aspiration, model, df):
     """
     Recommends the top 5 courses based on the user's aspiration.
-
-    Args:
-    - user_aspiration (str): The user's aspiration text.
-    - model (SentenceTransformer): The pre-trained sentence transformer model.
-    - df (pd.DataFrame): DataFrame containing course data.
-
-    Returns:
-    - list of dict: List of dictionaries containing course name, university, and URL.
     """
-    # Drop the 'Course Description' column and remove duplicates
-    df = df.drop(columns=["Course Description"])
-    df = df.drop_duplicates()
-
-    # Get similarity scores for all course names
-    similarity_scores = get_similarity(model, user_aspiration, df["Course Name"].tolist())
-
-    # Add similarity scores to the DataFrame
+    embeddings = df["embeddings"].apply(lambda x: ast.literal_eval(x) if pd.notna(x) else []).tolist()
+    similarity_scores = get_similarity(model, user_aspiration, embeddings)
     df["Similarity Score"] = similarity_scores
 
     # Sort by similarity score and course rating
@@ -67,19 +44,17 @@ def recommend_courses(user_aspiration, model, df):
     
     return recommendations
 
-# Load the model once
-model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
+# Uncomment the below lines for standalone model
+# model = SentenceTransformer('distilbert-base-nli-stsb-mean-tokens')
+# df = pd.read_csv("../assets/data/modified_courses.csv")
 
-# Load data
-df = pd.read_csv("../assets/data/courses.csv")
+# user_aspiration = "I want to learn history about religion"
+# recommended_courses = recommend_courses(user_aspiration, model, df)
 
-# Example user aspiration
-user_aspiration = "I want to learn communication skills"
+# for course in recommended_courses:
+#     print(f"'{course['Course Name']}' by '{course['University']}'")
+#     # We also get URLs here, but not printing them
 
-# Get recommendations
-recommended_courses = recommend_courses(user_aspiration, model, df)
-
-# Print recommendations
-for course in recommended_courses:
-    print(f"'{course['Course Name']}' by '{course['University']}'")
-    # We also get URLs here, but not printing them
+def suggest_queries():
+    pass
+    # TO DO
