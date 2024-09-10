@@ -21,7 +21,7 @@ sys.path.append(parent_dir)
 from model.recommend import recommend_courses, suggest_queries
 
 aspiration_model = SentenceTransformer('distilbert-base-nli-stsb-mean-tokens')
-df = pd.read_csv("../assets/data/courses.csv")
+df = pd.read_csv("../assets/data/modified_courses.csv")
 
 GEMINI_API_KEY = 'AIzaSyD7c4ZO6Y91WpU7VxOrjtejItUTrmYxScM'
 # GOOGLE_GEMINI_ENDPOINT = 'https://gemini.googleapis.com/v1beta/'
