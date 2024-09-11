@@ -12,12 +12,6 @@ import SoftTypography from "components/SoftTypography";
 import DefaultProjectCard from "examples/Cards/ProjectCards/DefaultProjectCard";
 import PlaceholderCard from "examples/Cards/PlaceholderCard";
 
-const headers = {
-  'Access-Control-Allow-Origin': true,
-  'Content-Type': 'application/json',
-  'Accept':'application/json'
-}
-
 function Overview() {
   const [profileData, setProfileData] = useState({
     skills: [],
@@ -47,6 +41,15 @@ function Overview() {
   return (
     <DashboardLayout>
       <Header />
+      <SoftBox mt={3}>
+        <Card style={{paddingLeft: "1.25rem", paddingRight: "1.25rem", paddingTop: "0.75rem", paddingBottom: "0.75rem"}}>
+          <SoftTypography variant="h6" fontWeight="bold">
+            Links
+          </SoftTypography>
+
+          
+        </Card>
+      </SoftBox>
       <SoftBox mt={5} mb={3}>
         <Grid container spacing={3}>
           <Grid item xs={12} md={6} xl={6}>

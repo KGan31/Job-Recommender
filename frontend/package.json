@@ -29,6 +29,7 @@
     "react": ">=16.8.0",
     "react-chartjs-2": "3.0.5",
     "react-countup": "6.4.2",
+    "react-doc-viewer": "^0.1.14",
     "react-dom": ">=16.8.0",
     "react-flatpickr": "3.10.13",
     "react-router-dom": "6.11.1",

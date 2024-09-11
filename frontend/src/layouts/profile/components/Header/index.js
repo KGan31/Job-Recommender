@@ -1,17 +1,26 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios"; // Import axios
 import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid";
 import SoftBox from "components/SoftBox";
 import SoftTypography from "components/SoftTypography";
 import SoftAvatar from "components/SoftAvatar";
+import SoftButton from "components/SoftButton";
 import { Mail } from "@mui/icons-material";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import curved0 from "assets/images/curved-images/curved0.jpg";
 import burceMars from "assets/images/bruce-mars.jpg";
 import breakpoints from "assets/theme/base/breakpoints";
 
+const headers = {
+  'Access-Control-Allow-Origin': true,
+  'Content-Type': 'application/json',
+  'Accept':'application/json'
+}
+
 function Header() {
+  const navigate = useNavigate();
   const [tabsOrientation, setTabsOrientation] = useState("horizontal");
   const [tabValue, setTabValue] = useState(0);
   const [profileInfo, setProfileInfo] = useState({ name: "", email: "" }); // Initialize state
@@ -43,6 +52,14 @@ function Header() {
 
     fetchProfile();
   }, []);
+
+  const handleClick = async () => {
+    try{
+      navigate('/profile/resume-wizard');
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   return (
     <SoftBox position="relative">
@@ -92,12 +109,18 @@ function Header() {
                 {profileInfo.name || "Name not available"}{" "}
                 {/* Handle case where name might not be available */}
               </SoftTypography>
+              <span style={{ display: "flex", alignItems: "center", marginBottom: "0.25rem", fontSize: "15px" }}>
+                {/* <Mail style={{ fontSize: "inherit", marginRight: "8px",  }} /> */}
+                
+                {profileInfo.email || "Email not available"}{" "}
+                {/* Handle case where email might not be available */}
+              </span>
               <SoftTypography variant="button" color="text" fontWeight="medium">
                 Student
               </SoftTypography>
             </SoftBox>
           </Grid>
-          <Grid
+          {/* <Grid
             item
             xs={12}
             md={6}
@@ -106,9 +129,21 @@ function Header() {
           >
             <span style={{ display: "flex", alignItems: "center" }}>
               <Mail style={{ fontSize: "inherit", marginRight: "8px" }} />
-              {profileInfo.email || "Email not available"}{" "}
+              {profileInfo.email || "Email not available"}{" "} */}
               {/* Handle case where email might not be available */}
-            </span>
+            {/* </span>
+          </Grid> */}
+
+          <Grid
+            item
+            xs={12}
+            md={6}
+            lg={4}
+            sx={{ ml: "auto", display: "flex", alignItems: "center", fontSize: 16, justifyContent: "end" }}
+          >
+            <SoftButton color="primary" size="medium" circular="true" onClick={() => handleClick()}>
+              Export as Resume
+            </SoftButton>
           </Grid>
         </Grid>
       </Card>

@@ -58,6 +58,8 @@ import Form from "layouts/Form";
 import JobPostings from "layouts/job-postings";
 import RecommendCourses from "layouts/recommend-courses";
 import Aspirations from "layouts/aspirations";
+import WorkIcon from '@mui/icons-material/Work';
+import BookIcon from '@mui/icons-material/Book';
 
 const routes = [
   {
@@ -86,7 +88,7 @@ const routes = [
     name: "Job Postings",
     key: "job-postings",
     route: "/job-postings",
-    icon: <Office size="12px" />,
+    icon: <WorkIcon sx={{width: "15px", height: "15px"}}/>,
     component: <JobPostings />,
     noCollapse: true,
   },
@@ -95,7 +97,7 @@ const routes = [
     name: "Recommend Courses",
     key: "recommend-courses",
     route: "/recommend-courses",
-    icon: <Office size="12px" />,
+    icon: <BookIcon sx={{width: "15px", height: "15px"}}/>,
     component: <RecommendCourses />,
     noCollapse: true,
   },
