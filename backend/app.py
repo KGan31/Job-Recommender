@@ -12,6 +12,9 @@ from datetime import datetime
 from flask_cors import CORS, cross_origin
 from flask import Flask, request, jsonify, send_file, Response
 from sentence_transformers import SentenceTransformer, util
+from docx import Document
+from docx.enum.text import WD_TAB_ALIGNMENT, WD_TAB_LEADER
+from docx.shared import Inches
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
@@ -216,7 +219,135 @@ def get_courses_from_aspirations():
 def get_similar_questions():
     pass
     # TO DO
+    
+@app.route('/api/resume', methods=["POST"])
+def get_resume():
+    resume_details = json.loads(request.get_data())
+    name = resume_details["name"]
+    email = resume_details["email"]
+    github = resume_details["github"]
+    linkedin = resume_details["linkedin"]
+    skills = resume_details["skills"]
+    education = resume_details["education"]
+    experience = resume_details["experiences"]
+    projects = resume_details["projects"]
+    extra = resume_details["extracurriculars"]
+    
+    doc = Document('resume-template.docx')
+    for paragraph in doc.paragraphs:
+        # Replace name
+        if '{{name}}' in paragraph.text:
+            paragraph.text = paragraph.text.replace('{{name}}', name)
+            
+        if '{{email}}' in paragraph.text:
+            paragraph.text = paragraph.text.replace('{{email}}', email)
+            
+        if '{{github}}' in paragraph.text:
+            paragraph.text = paragraph.text.replace('{{github}} ', f"{github} " if github else "")
+            
+        if '{{linkedin}}' in paragraph.text:
+            paragraph.text = paragraph.text.replace('{{linkedin}} ', f"{linkedin} " if linkedin else "")
+            
+        if '{{skills}}' in paragraph.text:
+            skills_text = ', '.join(skills)
+            paragraph.clear()
+            text = paragraph.add_run(skills_text)
+            text.bold = False
+            
+        if '{{education}}' in paragraph.text:
+            paragraph.clear()
 
+            # Iterate through each experience and add it in the required format
+            for p in education:
+                # Add project title and make it bold
+                run_title = paragraph.add_run(f'{p["degree"]} at {p["university"]}, {p["location"]}')
+                run_title.bold = True
+                
+                paragraph.paragraph_format.tab_stops.add_tab_stop(Inches(7.5), WD_TAB_ALIGNMENT.RIGHT, WD_TAB_LEADER.SPACES)
+                
+                tab = paragraph.add_run("\t")
+
+                # Add spaces and the date range, right-aligned
+                run_date = paragraph.add_run(f"{p['from']} - {p['to']}") 
+                run_date.bold = False
+
+                # Add a line break for the description
+                paragraph.add_run("\n")
+
+                # Add the description
+                run_desc = paragraph.add_run(f'CGPA: {p["cgpa"]}')
+                run_desc.bold = False
+                endline = paragraph.add_run("\n")
+        
+        # Replace experience
+        if '{{projects}}' in paragraph.text:
+            # Clear the paragraph text
+            paragraph.clear()
+
+            # Iterate through each experience and add it in the required format
+            for p in projects:
+                # Add project title and make it bold
+                run_title = paragraph.add_run(p["title"])
+                run_title.bold = True
+                
+                paragraph.paragraph_format.tab_stops.add_tab_stop(Inches(7.5), WD_TAB_ALIGNMENT.RIGHT, WD_TAB_LEADER.SPACES)
+                
+                tab = paragraph.add_run("\t")
+
+                # Add spaces and the date range, right-aligned
+                run_date = paragraph.add_run(f"{p['from']} - {p['to']}") 
+                run_date.bold = False
+                
+
+                # Add a line break for the description
+                paragraph.add_run("\n")
+
+                # Add the description
+                run_desc = paragraph.add_run(p["description"])
+                run_desc.bold = False
+                endline = paragraph.add_run("\n")
+                
+        if '{{experience}}' in paragraph.text:
+            # Clear the paragraph text
+            paragraph.clear()
+
+            # Iterate through each experience and add it in the required format
+            for p in experience:
+                # Add project title and make it bold
+                run_title = paragraph.add_run(p["title"])
+                run_title.bold = True
+                
+                paragraph.paragraph_format.tab_stops.add_tab_stop(Inches(7.5), WD_TAB_ALIGNMENT.RIGHT, WD_TAB_LEADER.SPACES)
+                
+                tab = paragraph.add_run("\t")
+
+                # Add spaces and the date range, right-aligned
+                run_date = paragraph.add_run(f"{p['from']} - {p['to']}")
+                run_date.bold = False
+
+                # Add a line break for the description
+                paragraph.add_run("\n")
+
+                # Add the description
+                run_desc = paragraph.add_run(p["description"])
+                run_desc.bold = False
+                
+                endline = paragraph.add_run("\n")
+                
+        if '{{extra}}' in paragraph.text:
+            # Clear the paragraph text
+            paragraph.clear()
+
+            # Iterate through each experience and add it in the required format
+            for p in extra:
+                # Add project title and make it bold
+                run_title = paragraph.add_run(p)
+                run_title.bold = False
+                endline = paragraph.add_run("\n")
+                
+    doc.save('RESUME.docx')
+                
+    return send_file('RESUME.docx', as_attachment=True)
 
 if __name__ == '__main__':
     app.run(debug=True)
