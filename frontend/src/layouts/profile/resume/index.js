@@ -14,6 +14,8 @@ Coded by www.creative-tim.com
 */
 
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 // @mui material components
 import Grid from "@mui/material/Grid";
@@ -32,74 +34,67 @@ import DocViewer from "react-doc-viewer";
 import SoftButton from "components/SoftButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import AddSkillModal from "./components/AddSkillModal";
-import ExtraCurrModal from "./components/ExtraCurrModal";
+import AddSkillModal from "../../../examples/Modals/AddSkillModal";
+import ExtraCurrModal from "../../../examples/Modals/ExtraCurrModal";
+import SoftInput from "components/SoftInput";
 
 //https://img.freepik.com/free-photo/abstract-autumn-beauty-multi-colored-leaf-vein-pattern-generated-by-ai_188544-9871.jpg
 
+const headers = {
+  "Access-Control-Allow-Origin": true,
+  "Content-Type": "application/json",
+  Accept: "application/json",
+};
+
 function Resume() {
+  const navigate = useNavigate();
   const [resumeDetails, setResumeDetails] = useState([]); // check the format of the resume details returned from backend
   const [isSkill, setIsSkill] = useState(false);
+  const email = localStorage.getItem("userEmail");
   const [isExtra, setIsExtra] = useState(false);
   const [isExtraEdit, setIsExtraEdit] = useState(false);
   const [openExtra, setOpenExtra] = useState(false);
   const [editIndex, setEditIndex] = useState(0);
-  const [editedDetails, setEditedDetails] = useState({
-    github: "https://github.com",
-    linkedIn: "djfdjkfdfdf",
-    email: "mgr@gmail.com",
-    education: [
-      {
-        university: "VJTI",
-        degree: "B.Tech",
-        from: "",
-        to: "",
-        location: "",
-        cgpa: 0,
-      },
-    ],
-    skills: ["React", "Vue.js", "Laravel", "Node.js"],
-    experiences: [
-      {
-        company_name: "Amazon",
-        position: "SDE Intern",
-        location: "Banglore, India",
-        from: "20-05-2023",
-        to: "20-07-2023",
-        job_description: "",
-      },
-    ],
-    projects: [
-      {
-        title: "",
-        from: "",
-        to: "",
-        // techstack: ["React", "Flask"],
-        description: "",
-      },
-    ],
-    extracurriculars: ["National level football."],
-  });
-
-  const [isEdit, setIsEdit] = useState(false);
-  const docs = useState([
-    {
-      uri: null,
-    },
-  ]);
+  const [editedDetails, setEditedDetails] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const fetchResume = async () => {
-      // const response = axios.post() // resume wizard backend api post request
+    const fetchProfile = async () => {
+      const response = await axios.get(`http://localhost:5000/api/profile/${email}`, headers);
+      console.log(response);
+      setEditedDetails(response.data);
+      localStorage.setItem('profileDetails', JSON.stringify(response.data));
     };
-    fetchResume();
+    fetchProfile();
   }, []);
+
+  const handleInputChange = (field, value) => {
+    setEditedDetails({ ...editedDetails, [field]: value });
+  };
+
+  const handleEducationChange = (index, field, value) => {
+    const updatedEducation = [...editedDetails.education];
+    updatedEducation[index][field] = value;
+    setEditedDetails({ ...editedDetails, education: updatedEducation });
+  };
+
+  const handleExpChange = (index, field, value) => {
+    const updatedExp = [...editedDetails.experiences];
+    updatedExp[index][field] = value;
+    setEditedDetails({ ...editedDetails, experiences: updatedExp });
+  };
+
+  const handleProjChange = (index, field, value) => {
+    const updateProj = [...editedDetails.projects];
+    updateProj[index][field] = value;
+    setEditedDetails({ ...editedDetails, experiences: updateProj });
+  };
 
   const handleAddEdu = () => {
     const temp = { ...editedDetails };
     const obj = {
-      university: "VJTI",
-      degree: "B.Tech",
+      university: "",
+      degree: "",
       from: "",
       to: "",
     };
@@ -128,11 +123,11 @@ function Resume() {
   const handleAddExp = () => {
     const temp = { ...editedDetails };
     const obj = {
-      company_name: "Amazon",
-      position: "SDE Intern",
-      location: "Banglore, India",
-      from: "20-05-2023",
-      to: "20-07-2023",
+      company_name: "",
+      position: "",
+      location: "",
+      from: "",
+      to: "",
       job_description: "",
     };
     temp.experiences.push(obj);
@@ -165,69 +160,92 @@ function Resume() {
   };
 
   const handleDelExtra = (index) => {
-    const temp = {...editedDetails};
+    const temp = { ...editedDetails };
     temp.extracurriculars.splice(index, 1);
     setEditedDetails(temp);
-  }
+  };
+
+  const handleEditRes = async () => {
+    // const response = axios.post() post request to backend api
+    const profileDetails = JSON.parse(localStorage.getItem('profileDetails'));
+    const flag = JSON.stringify(profileDetails) === JSON.stringify(editedDetails);
+    console.log(flag);
+    const data = {
+      log: editedDetails,
+      flag: flag
+    }
+    try {
+      setLoading(true);
+      const response = await axios.post("http://localhost:5000/api/resume", data, {
+        headers: {
+          "Access-Control-Allow-Origin": true,
+          "Content-Type": "application/json",
+          Accept: "application/pdf",
+        },
+        responseType: "blob",
+      });
+      // console.log(response.data)
+
+      const pdfBlob = new Blob([response.data], { type: "application/pdf" });
+
+      let pdfUrl = URL.createObjectURL(pdfBlob);
+
+      console.log(pdfUrl);
+      setLoading(false);
+      // pdfUrl = pdfUrl.substring(5);
+      navigate("/profile/resume-wizard/preview", { state: { pdfUrl } });
+    } catch (err) {
+      console.error("Error in resume upload: ", err);
+    }
+  };
 
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      {resumeDetails !== null ? (
-        <>
-          {/* <SoftBox py={3} style={{ display: "flex", justifyContent: "center" }}>
-                <DocViewer documents={docs} style={{ height: 500, width: "75%" }} />
-            </SoftBox> */}
-          <SoftBox style={{ display: "flex", justifyContent: "center", gap: "15px" }}>
-            {!isEdit ? (
-              <SoftButton onClick={() => setIsEdit(true)} size="medium" color="info">
-                Edit
-              </SoftButton>
-            ) : (
-              <SoftButton onClick={() => setIsEdit(false)} size="medium" color="error">
-                Cancel
-              </SoftButton>
-            )}
-            <SoftButton size="medium" color="secondary">
-              Download
-            </SoftButton>
-          </SoftBox>
 
-          {isEdit && (
-            <SoftBox py={3}>
-              <SoftTypography style={{ textAlign: "center" }} variant="h4" fontWeight="regular">
-                Edit Resume
-              </SoftTypography>
+      {loading ? (
+        <SoftTypography variant="h5" fontWeight="regular" style={{marginTop: "12px"}}>
+          Generating your resume, please wait....
+        </SoftTypography>
+      ) : (
+        <SoftBox py={3}>
+          <SoftTypography style={{ textAlign: "center" }} variant="h4" fontWeight="regular">
+            Resume Details
+          </SoftTypography>
+          {editedDetails !== null ? (
+            <>
               <SoftBox py={3}>
                 <SoftTypography variant="h6" fontWeight="regular">
                   Github URL
                 </SoftTypography>
-                <input
-                  name="github"
-                  type="url"
-                  style={{ marginTop: "-2px", maxWidth: "50%" }}
+
+                <SoftInput
+                  size="medium"
                   value={editedDetails.github}
-                />
+                  style={{ maxWidth: "45%" }}
+                  onChange={(e) => handleInputChange("github", e.target.value)}
+                ></SoftInput>
 
                 <SoftTypography variant="h6" fontWeight="regular" style={{ marginTop: "1.25rem" }}>
                   LinkedIn URL
                 </SoftTypography>
-                <input
-                  name="github"
-                  type="url"
-                  style={{ marginTop: "-2px", maxWidth: "50%" }}
+                <SoftInput
+                  size="medium"
                   value={editedDetails.linkedIn}
-                />
+                  style={{ maxWidth: "45%" }}
+                  onChange={(e) => handleInputChange("linkedIn", e.target.value)}
+                ></SoftInput>
 
                 <SoftTypography variant="h6" fontWeight="regular" style={{ marginTop: "1.25rem" }}>
                   Email
                 </SoftTypography>
-                <input
-                  name="github"
+                <SoftInput
+                  size="medium"
                   type="email"
-                  style={{ marginTop: "-2px", maxWidth: "50%" }}
                   value={editedDetails.email}
-                />
+                  style={{ maxWidth: "45%" }}
+                  onChange={(e) => handleInputChange("email", e.target.value)}
+                ></SoftInput>
 
                 <SoftTypography variant="h6" fontWeight="regular" style={{ marginTop: "1.25rem" }}>
                   Education
@@ -275,13 +293,50 @@ function Resume() {
                           >
                             University/College
                           </SoftTypography>
-                          <input type="text" value={e.university} />
+                          <SoftInput
+                            size="medium"
+                            value={e.university}
+                            onChange={(ev) =>
+                              handleEducationChange(index, "university", ev.target.value)
+                            }
+                          ></SoftInput>
                         </Grid>
                         <Grid item xs={6}>
                           <SoftTypography variant="h6" fontWeight="regular">
                             Degree
                           </SoftTypography>
-                          <input type="text" value={e.degree} />
+                          <SoftInput
+                            size="medium"
+                            value={e.degree}
+                            onChange={(ev) =>
+                              handleEducationChange(index, "degree", ev.target.value)
+                            }
+                          ></SoftInput>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <SoftTypography variant="h6" fontWeight="regular">
+                            Location
+                          </SoftTypography>
+                          <SoftInput
+                            size="medium"
+                            value={e.location}
+                            onChange={(ev) =>
+                              handleEducationChange(index, "location", ev.target.value)
+                            }
+                          ></SoftInput>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <SoftTypography variant="h6" fontWeight="regular">
+                            CGPA
+                          </SoftTypography>
+                          <SoftInput
+                            size="medium"
+                            type="number"
+                            step=".01"
+                            min="0"
+                            value={e.cgpa}
+                            onChange={(ev) => handleEducationChange(index, "cgpa", ev.target.value)}
+                          ></SoftInput>
                         </Grid>
                         <Grid item xs={6}>
                           <SoftTypography
@@ -291,7 +346,12 @@ function Resume() {
                           >
                             From
                           </SoftTypography>
-                          <input type="date" value={e.from} />
+                          <SoftInput
+                            size="medium"
+                            type="date"
+                            value={e.from}
+                            onChange={(ev) => handleEducationChange(index, "from", ev.target.value)}
+                          ></SoftInput>
                         </Grid>
                         <Grid item xs={6}>
                           <SoftTypography
@@ -301,7 +361,12 @@ function Resume() {
                           >
                             To
                           </SoftTypography>
-                          <input type="date" value={e.to} />
+                          <SoftInput
+                            size="medium"
+                            type="date"
+                            value={e.to}
+                            onChange={(ev) => handleEducationChange(index, "to", ev.target.value)}
+                          ></SoftInput>
                         </Grid>
                       </>
                     ))}
@@ -329,30 +394,36 @@ function Resume() {
                     width: "60%",
                   }}
                 >
-                  {editedDetails.skills.map((skill, index) => (
-                    <div
-                      key={index}
-                      style={{
-                        width: "100%",
-                        borderBottom: "1px solid black",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        padding: "0.75rem",
-                        marginTop: getMarginTop(index),
-                      }}
-                    >
-                      <SoftTypography variant="h6" fontWeight="regular">
-                        {skill}
-                      </SoftTypography>
-                      <DeleteIcon
-                        color="error"
-                        fontSize="medium"
-                        sx={{ cursor: "pointer" }}
-                        onClick={() => handleDelSkill(index)}
-                      />
-                    </div>
-                  ))}
+                  {editedDetails.skills.length > 0 ? (
+                    editedDetails.skills.map((skill, index) => (
+                      <div
+                        key={index}
+                        style={{
+                          width: "100%",
+                          borderBottom: "1px solid black",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          padding: "0.75rem",
+                          marginTop: getMarginTop(index),
+                        }}
+                      >
+                        <SoftTypography variant="h6" fontWeight="regular">
+                          {skill}
+                        </SoftTypography>
+                        <DeleteIcon
+                          color="error"
+                          fontSize="medium"
+                          sx={{ cursor: "pointer" }}
+                          onClick={() => handleDelSkill(index)}
+                        />
+                      </div>
+                    ))
+                  ) : (
+                    <SoftTypography variant="h6" fontWeight="regular">
+                      Add your skills here....
+                    </SoftTypography>
+                  )}
 
                   <SoftButton
                     color="info"
@@ -410,19 +481,33 @@ function Resume() {
                           >
                             Company
                           </SoftTypography>
-                          <input type="text" value={e.company_name} />
+                          <SoftInput
+                            size="medium"
+                            value={e.company_name}
+                            onChange={(ev) =>
+                              handleExpChange(index, "company_name", ev.target.value)
+                            }
+                          ></SoftInput>
                         </Grid>
                         <Grid item xs={6}>
                           <SoftTypography variant="h6" fontWeight="regular">
                             Position
                           </SoftTypography>
-                          <input type="text" value={e.position} />
+                          <SoftInput
+                            size="medium"
+                            value={e.position}
+                            onChange={(ev) => handleExpChange(index, "position", ev.target.value)}
+                          ></SoftInput>
                         </Grid>
                         <Grid item xs={6}>
                           <SoftTypography variant="h6" fontWeight="regular">
                             Location
                           </SoftTypography>
-                          <input type="text" value={e.position} />
+                          <SoftInput
+                            size="medium"
+                            value={e.location}
+                            onChange={(ev) => handleExpChange(index, "location", ev.target.value)}
+                          ></SoftInput>
                         </Grid>
                         <Grid item xs={6}>
                           <SoftTypography
@@ -432,7 +517,12 @@ function Resume() {
                           >
                             From
                           </SoftTypography>
-                          <input type="date" value={e.from} />
+                          <SoftInput
+                            size="medium"
+                            type="date"
+                            value={e.from}
+                            onChange={(ev) => handleExpChange(index, "from", ev.target.value)}
+                          ></SoftInput>
                         </Grid>
                         <Grid item xs={6}>
                           <SoftTypography
@@ -442,7 +532,12 @@ function Resume() {
                           >
                             To
                           </SoftTypography>
-                          <input type="date" value={e.to} />
+                          <SoftInput
+                            size="medium"
+                            type="date"
+                            value={e.to}
+                            onChange={(ev) => handleExpChange(index, "to", ev.target.value)}
+                          ></SoftInput>
                         </Grid>
                         <Grid item xs={9}>
                           <SoftTypography
@@ -452,7 +547,27 @@ function Resume() {
                           >
                             Job Description
                           </SoftTypography>
-                          <textarea value={e.job_description} />
+                          {/* <SoftInput
+                   size="large"
+                   value={e.job_description}
+                   onChange={(ev) => handleExpChange(index, "job_description", ev.target.value)}
+                 ></SoftInput> */}
+                          <textarea
+                            rows={6}
+                            style={{
+                              width: "100%",
+                              fontSize: "14px",
+                              paddingTop: "8px",
+                              paddingBottom: "8px",
+                              paddingLeft: "12px",
+                              paddingRight: "12px",
+                              fontWeight: "normal",
+                            }}
+                            value={e.job_description}
+                            onChange={(ev) =>
+                              handleExpChange(index, "job_description", ev.target.value)
+                            }
+                          ></textarea>
                         </Grid>
                       </>
                     ))}
@@ -514,7 +629,11 @@ function Resume() {
                           >
                             Project Title
                           </SoftTypography>
-                          <input type="text" value={proj.title} />
+                          <SoftInput
+                            size="medium"
+                            value={proj.title}
+                            onChange={(ev) => handleProjChange(index, "title", ev.target.value)}
+                          ></SoftInput>
                         </Grid>
                         <Grid item xs={6}>
                           <SoftTypography
@@ -524,7 +643,12 @@ function Resume() {
                           >
                             From
                           </SoftTypography>
-                          <input type="date" value={proj.from} />
+                          <SoftInput
+                            size="medium"
+                            type="date"
+                            value={proj.from}
+                            onChange={(ev) => handleProjChange(index, "from", ev.target.value)}
+                          ></SoftInput>
                         </Grid>
                         <Grid item xs={6}>
                           <SoftTypography
@@ -534,7 +658,12 @@ function Resume() {
                           >
                             To
                           </SoftTypography>
-                          <input type="date" value={proj.to} />
+                          <SoftInput
+                            size="medium"
+                            type="date"
+                            value={proj.to}
+                            onChange={(ev) => handleProjChange(index, "to", ev.target.value)}
+                          ></SoftInput>
                         </Grid>
                         <Grid item xs={9}>
                           <SoftTypography
@@ -544,7 +673,22 @@ function Resume() {
                           >
                             Project Description
                           </SoftTypography>
-                          <textarea value={proj.description} />
+                          <textarea
+                            rows={6}
+                            style={{
+                              width: "100%",
+                              fontSize: "14px",
+                              paddingTop: "8px",
+                              paddingBottom: "8px",
+                              paddingLeft: "12px",
+                              paddingRight: "12px",
+                              fontWeight: "normal",
+                            }}
+                            value={proj.description}
+                            onChange={(ev) =>
+                              handleProjChange(index, "description", ev.target.value)
+                            }
+                          ></textarea>
                         </Grid>
                       </>
                     ))}
@@ -572,44 +716,50 @@ function Resume() {
                     width: "60%",
                   }}
                 >
-                  {editedDetails.extracurriculars.map((e, index) => (
-                    <>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "0.75rem",
-                          marginTop: "0.75rem",
-                        }}
-                      >
-                        <SoftTypography variant="h6" fontWeight="regular">
-                          Extracurricular {index + 1}
-                        </SoftTypography>
-                        <EditIcon
-                          color="secondary"
-                          fontSize="medium"
-                          sx={{ cursor: "pointer" }}
-                          onClick={() => {
-                            setIsExtraEdit(true);
-                            setOpenExtra(true);
-                            setEditIndex(index);
+                  {editedDetails.extracurriculars.length > 0 ? (
+                    editedDetails.extracurriculars.map((e, index) => (
+                      <>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "0.75rem",
+                            marginTop: "0.75rem",
                           }}
-                        />
-                        {/* {index > 0 && <SoftButton color="error" size="medium" onClick={() => handleDelEdu(index)}>Delete</SoftButton>} */}
-                        {index > 0 && (
-                          <DeleteIcon
-                            color="error"
+                        >
+                          <SoftTypography variant="h6" fontWeight="regular">
+                            Extracurricular {index + 1}
+                          </SoftTypography>
+                          <EditIcon
+                            color="secondary"
                             fontSize="medium"
                             sx={{ cursor: "pointer" }}
-                            onClick={() => handleDelExtra(index)}
+                            onClick={() => {
+                              setIsExtraEdit(true);
+                              setOpenExtra(true);
+                              setEditIndex(index);
+                            }}
                           />
-                        )}
-                      </div>
-                      <SoftTypography variant="h6" fontWeight="light">
-                        {e}
-                      </SoftTypography>
-                    </>
-                  ))}
+                          {/* {index > 0 && <SoftButton color="error" size="medium" onClick={() => handleDelEdu(index)}>Delete</SoftButton>} */}
+                          {index > 0 && (
+                            <DeleteIcon
+                              color="error"
+                              fontSize="medium"
+                              sx={{ cursor: "pointer" }}
+                              onClick={() => handleDelExtra(index)}
+                            />
+                          )}
+                        </div>
+                        <SoftTypography variant="h6" fontWeight="light">
+                          {e}
+                        </SoftTypography>
+                      </>
+                    ))
+                  ) : (
+                    <SoftTypography variant="h6" fontWeight="regular">
+                      Add your hobbies, achivements, club activities here...
+                    </SoftTypography>
+                  )}
 
                   <SoftButton
                     color="info"
@@ -624,13 +774,22 @@ function Resume() {
                   </SoftButton>
                 </Card>
               </SoftBox>
-            </SoftBox>
+
+              <SoftButton
+                color="primary"
+                size="medium"
+                style={{ width: "fit-content" }}
+                onClick={() => handleEditRes()}
+              >
+                Generate Resume
+              </SoftButton>
+            </>
+          ) : (
+            <SoftTypography variant="h5" fontWeight="regular">
+              Fetching details please wait...
+            </SoftTypography>
           )}
-        </>
-      ) : (
-        <SoftTypography variant="h4" fontWeight="regular" mt={3}>
-          Generating your resume, please wait...
-        </SoftTypography>
+        </SoftBox>
       )}
 
       {isSkill && (

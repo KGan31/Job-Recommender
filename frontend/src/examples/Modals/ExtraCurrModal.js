@@ -4,6 +4,7 @@ import Box from "@mui/material/Box";
 import PropTypes from "prop-types";
 import SoftTypography from "components/SoftTypography";
 import SoftButton from "components/SoftButton";
+import SoftInput from "components/SoftInput";
 
 // Add styling for the modal box
 const style = {
@@ -66,8 +67,7 @@ export default function ExtraCurrModal({
         <SoftTypography variant="h6" fontWeight="regular">
           Extracurricular
         </SoftTypography>
-        <input
-          type="text"
+        <SoftInput
           value={extracurricular}
           onChange={(e) => setExtracurricular(e.target.value)}
           style={{ marginTop: "0.5rem", marginBottom: "1rem", width: "100%" }}

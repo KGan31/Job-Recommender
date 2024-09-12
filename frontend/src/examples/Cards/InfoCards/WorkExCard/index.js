@@ -11,6 +11,16 @@ import typography from "assets/theme/base/typography";
 function WorkExperienceCard({ title, description, experiences, action }) {
   const { size } = typography;
 
+  function formatDate(dateString) {
+    // Create a Date object from the input date string
+    const date = new Date(dateString);
+  
+    // Format the date to 'Month YYYY' using toLocaleString
+    const formattedDate = date.toLocaleString('en-US', { month: 'short', year: 'numeric' });
+  
+    return formattedDate;
+  }
+
   // Function to render work experience items
   const renderExperiences = () => {
     if (experiences.length === 0) {
@@ -19,13 +29,13 @@ function WorkExperienceCard({ title, description, experiences, action }) {
     return experiences.map((experience, index) => (
       <SoftBox key={index} mb={2}>
         <SoftTypography variant="h6" fontWeight="bold">
-          {experience.jobTitle}
+          {experience.position}
         </SoftTypography>
         <SoftTypography variant="caption" color="text" fontWeight="medium">
-          {experience.duration}
+          {formatDate(experience.from)}-{formatDate(experience.to)}
         </SoftTypography>
         <SoftTypography variant="body2" color="text" fontWeight="regular" mt={1}>
-          {experience.description}
+          {experience.job_description}
         </SoftTypography>
       </SoftBox>
     ));

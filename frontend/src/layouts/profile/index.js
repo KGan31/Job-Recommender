@@ -12,12 +12,14 @@ import SoftTypography from "components/SoftTypography";
 import DefaultProjectCard from "examples/Cards/ProjectCards/DefaultProjectCard";
 import PlaceholderCard from "examples/Cards/PlaceholderCard";
 
+const headers = {
+  'Access-Control-Allow-Origin': true,
+  'Content-Type': 'application/json',
+  'Accept':'application/json'
+}
+
 function Overview() {
-  const [profileData, setProfileData] = useState({
-    skills: [],
-    work_ex: [],
-    projects: [],
-  });
+  const [profileData, setProfileData] = useState(null);
   //const email = "user@example.com"; // replace with actual email from user context or authentication
   const email = localStorage.getItem("userEmail");
   useEffect(() => {
@@ -41,15 +43,7 @@ function Overview() {
   return (
     <DashboardLayout>
       <Header />
-      <SoftBox mt={3}>
-        <Card style={{paddingLeft: "1.25rem", paddingRight: "1.25rem", paddingTop: "0.75rem", paddingBottom: "0.75rem"}}>
-          <SoftTypography variant="h6" fontWeight="bold">
-            Links
-          </SoftTypography>
-
-          
-        </Card>
-      </SoftBox>
+      
       <SoftBox mt={5} mb={3}>
         <Grid container spacing={3}>
           <Grid item xs={12} md={6} xl={6}>
@@ -64,7 +58,7 @@ function Overview() {
             <WorkExperienceCard
               title="Work Experience"
               description="An overview of my professional journey including roles, responsibilities, and contributions."
-              experiences={profileData.work_ex}
+              experiences={profileData.experiences}
               action={{ route: "/edit-experience", tooltip: "Edit Work Experience" }}
             />
           </Grid>
@@ -81,14 +75,14 @@ function Overview() {
           </SoftBox>
           <SoftBox p={2}>
             <Grid container spacing={3}>
-              {profileData.projects.length > 0 ? (
+              {profileData !== null && profileData.projects?.length > 0 ? (
                 profileData.projects.map((project, index) => (
                   <Grid item xs={12} md={6} xl={3} key={index}>
                     <DefaultProjectCard
                       image="https://res.cloudinary.com/dyxnmjtrg/image/upload/v1687757420/aes1_dbwjjp.png" // Provide a placeholder or default image if needed
-                      title={project.projectName}
+                      title={project.title}
                       description={project.description}
-                      duration={project.duration} // Make sure you pass the duration if it's part of the project data
+                      // duration={project.duration} // Make sure you pass the duration if it's part of the project data
                       action={{
                         type: "internal",
                         route: "/pages/profile/profile-overview",

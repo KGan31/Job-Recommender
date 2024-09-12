@@ -4,6 +4,7 @@ import Box from "@mui/material/Box";
 import PropTypes from "prop-types";
 import SoftTypography from "components/SoftTypography";
 import SoftButton from "components/SoftButton";
+import SoftInput from "components/SoftInput";
 
 // Add styling for the modal box
 const style = {
@@ -45,12 +46,13 @@ export default function AddSkillModal({ isSkill, setIsSkill, setEditedDetails, e
         <SoftTypography variant="h6" fontWeight="regular">
           Add Skill
         </SoftTypography>
-        <input
+        {/* <input
           type="text"
           value={skill}
           onChange={(e) => setSkill(e.target.value)}
           style={{ marginTop: '0.5rem', marginBottom: '1rem', width: '100%' }}
-        />
+        /> */}
+        <SoftInput value={skill} onChange={(e) => setSkill(e.target.value)} style={{ marginTop: '0.5rem', marginBottom: '1rem', width: '100%' }}></SoftInput>
 
         <div style={{ display: "flex", gap: '1rem' }}>
           <SoftButton color="info" size="small" onClick={handleClick}>
