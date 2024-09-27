@@ -31,7 +31,7 @@ export default function ProfileScoreCard({profileData}) {
                     </div>
                 </Grid>
                 <Grid item xs={12} md={12} lg={8} sx={{display: "flex", flexDirection: "column"}}>
-                    <SoftTypography fontWeight="regular" variant="button" color="text">Profile score is based on your skills. Increase it by taking a skills test.</SoftTypography>
+                    <SoftTypography fontWeight="regular" variant="button" color="text">Your profile score is determined by your proficiency in the skills listed on your profile. Increase your score by taking skill-based tests.</SoftTypography>
                     <SoftButton
                         color="info"
                         size="medium"
