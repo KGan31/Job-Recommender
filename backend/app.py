@@ -219,6 +219,22 @@ def add_user_profile(profile_info):
             }
         },
     )
+    
+@app.route("/api/get-profile-questions", methods=["POST"])
+def get_profile_questions():
+    req = json.loads(request.get_data()) # {"skills": [skill1, skill2, ...]}
+    skills = str(req["skills"])
+    prompt = skills + """\n
+Based on the given list of skills, give 10 conceptual, medium-level and domain specific questions in single-correct MCQ format for judging how well a person knows each these skills fundamentally, along with their correct answers. Do not give any explanations, just a list of questions in format.
+[
+{question: "question", options: ["A":"option1", "B":"option2"...], correct: ["A"]}
+]
+Make the order of the options less predictable"""
+    
+    response = model.generate_content(prompt)
+    res = json.loads(response.text)
+
+    return res
 
 @app.route("/api/save-profile", methods=["POST"])
 def add_user_skills():
