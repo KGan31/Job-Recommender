@@ -49,6 +49,7 @@ import { useSoftUIController, setMiniSidenav, setOpenConfigurator } from "contex
 import brand from "assets/images/logo-ct.png";
 import Resume from "layouts/profile/resume";
 import ResumePreview from "layouts/profile/resume/preview";
+import ProfileTest from "layouts/profile/profileTest";
 import { pdfjs } from 'react-pdf';
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
@@ -187,6 +188,7 @@ export default function App() {
         {getRoutes(routes)}
         <Route path='/profile/resume-wizard' element={<Resume />} />
         <Route path='/profile/resume-wizard/preview' element={<ResumePreview />} />
+        <Route path='/profile/profile-test' element={<ProfileTest />} />
         <Route path="*" element={<Navigate to="/dashboard" />} />
       </Routes>
     </ThemeProvider>
