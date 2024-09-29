@@ -252,6 +252,19 @@ def add_user_skills():
     )
     return response
 
+@app.route("/api/get-skill-questions/<string:skill>", methods=["GET"])
+def get_skill_questions(skill):
+    # Convert the skill to lowercase to match your database storage
+    skill_lower = skill.lower()
+    questions = db.Skill_test.find_one({"skill": skill_lower})
+    
+    if questions:
+        return json.loads(json_util.dumps(questions)), 200
+    else:
+        return jsonify({"error": "No questions found for this skill"}), 404
+
+
+
 
 @app.route("/api/recommend-course", methods=["GET"])
 def getCourses():

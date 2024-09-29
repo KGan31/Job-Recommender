@@ -63,7 +63,7 @@ function Resume() {
       const response = await axios.get(`http://localhost:5000/api/profile/${email}`, headers);
       console.log(response);
       setEditedDetails(response.data);
-      localStorage.setItem('profileDetails', JSON.stringify(response.data));
+      localStorage.setItem("profileDetails", JSON.stringify(response.data));
     };
     fetchProfile();
   }, []);
@@ -167,13 +167,13 @@ function Resume() {
 
   const handleEditRes = async () => {
     // const response = axios.post() post request to backend api
-    const profileDetails = JSON.parse(localStorage.getItem('profileDetails'));
+    const profileDetails = JSON.parse(localStorage.getItem("profileDetails"));
     const flag = JSON.stringify(profileDetails) === JSON.stringify(editedDetails);
     console.log(flag);
     const data = {
       log: editedDetails,
-      flag: flag
-    }
+      flag: flag,
+    };
     try {
       setLoading(true);
       const response = await axios.post("http://localhost:5000/api/resume", data, {
@@ -204,7 +204,7 @@ function Resume() {
       <DashboardNavbar />
 
       {loading ? (
-        <SoftTypography variant="h5" fontWeight="regular" style={{marginTop: "12px"}}>
+        <SoftTypography variant="h5" fontWeight="regular" style={{ marginTop: "12px" }}>
           Generating your resume, please wait....
         </SoftTypography>
       ) : (

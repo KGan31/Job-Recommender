@@ -14,10 +14,10 @@ import burceMars from "assets/images/bruce-mars.jpg";
 import breakpoints from "assets/theme/base/breakpoints";
 
 const headers = {
-  'Access-Control-Allow-Origin': true,
-  'Content-Type': 'application/json',
-  'Accept':'application/json'
-}
+  "Access-Control-Allow-Origin": true,
+  "Content-Type": "application/json",
+  Accept: "application/json",
+};
 
 function Header() {
   const navigate = useNavigate();
@@ -54,12 +54,12 @@ function Header() {
   }, []);
 
   const handleClick = async () => {
-    try{
-      navigate('/profile/resume-wizard');
+    try {
+      navigate("/profile/resume-wizard");
     } catch (err) {
       console.error(err);
     }
-  }
+  };
 
   return (
     <SoftBox position="relative">
@@ -109,9 +109,15 @@ function Header() {
                 {profileInfo.name || "Name not available"}{" "}
                 {/* Handle case where name might not be available */}
               </SoftTypography>
-              <span style={{ display: "flex", alignItems: "center", marginBottom: "0.25rem", fontSize: "15px" }}>
+              <span
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginBottom: "0.25rem",
+                  fontSize: "15px",
+                }}
+              >
                 {/* <Mail style={{ fontSize: "inherit", marginRight: "8px",  }} /> */}
-                
                 {profileInfo.email || "Email not available"}{" "}
                 {/* Handle case where email might not be available */}
               </span>
@@ -130,8 +136,8 @@ function Header() {
             <span style={{ display: "flex", alignItems: "center" }}>
               <Mail style={{ fontSize: "inherit", marginRight: "8px" }} />
               {profileInfo.email || "Email not available"}{" "} */}
-              {/* Handle case where email might not be available */}
-            {/* </span>
+          {/* Handle case where email might not be available */}
+          {/* </span>
           </Grid> */}
 
           <Grid
@@ -139,7 +145,13 @@ function Header() {
             xs={12}
             md={6}
             lg={4}
-            sx={{ ml: "auto", display: "flex", alignItems: "center", fontSize: 16, justifyContent: "end" }}
+            sx={{
+              ml: "auto",
+              display: "flex",
+              alignItems: "center",
+              fontSize: 16,
+              justifyContent: "end",
+            }}
           >
             <SoftButton color="primary" size="medium" circular="true" onClick={() => handleClick()}>
               Export as Resume

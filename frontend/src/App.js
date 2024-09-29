@@ -49,11 +49,12 @@ import { useSoftUIController, setMiniSidenav, setOpenConfigurator } from "contex
 import brand from "assets/images/logo-ct.png";
 import Resume from "layouts/profile/resume";
 import ResumePreview from "layouts/profile/resume/preview";
-import { pdfjs } from 'react-pdf';
+import SkillVerification from "layouts/Form/SkillVerification";
+import { pdfjs } from "react-pdf";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.mjs',
-  import.meta.url,
+  "pdfjs-dist/build/pdf.worker.min.mjs",
+  import.meta.url
 ).toString();
 
 export default function App() {
@@ -185,8 +186,9 @@ export default function App() {
       {layout === "vr" && <Configurator />}
       <Routes>
         {getRoutes(routes)}
-        <Route path='/profile/resume-wizard' element={<Resume />} />
-        <Route path='/profile/resume-wizard/preview' element={<ResumePreview />} />
+        <Route path="/profile/resume-wizard" element={<Resume />} />
+        <Route path="/profile/resume-wizard/preview" element={<ResumePreview />} />
+        <Route path="/verify-skill/:skill" element={<SkillVerification />} />
         <Route path="*" element={<Navigate to="/dashboard" />} />
       </Routes>
     </ThemeProvider>

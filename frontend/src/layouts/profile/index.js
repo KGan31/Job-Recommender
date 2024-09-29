@@ -11,30 +11,34 @@ import Card from "@mui/material/Card";
 import SoftTypography from "components/SoftTypography";
 import DefaultProjectCard from "examples/Cards/ProjectCards/DefaultProjectCard";
 import PlaceholderCard from "examples/Cards/PlaceholderCard";
+import { useNavigate } from "react-router-dom";
 
 const headers = {
-  'Access-Control-Allow-Origin': true,
-  'Content-Type': 'application/json',
-  'Accept':'application/json'
-}
+  "Access-Control-Allow-Origin": true,
+  "Content-Type": "application/json",
+  Accept: "application/json",
+};
 
 function Overview() {
   const [profileData, setProfileData] = useState(null);
-  //const email = "user@example.com"; // replace with actual email from user context or authentication
+  const [verifiedSkills, setVerifiedSkills] = useState([]); // State for verified skills
   const email = localStorage.getItem("userEmail");
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const response = await axios.get(`http://localhost:5000/api/profile/${email}`, headers);
-        console.log("Fetched profile data:", response.data);
         setProfileData(response.data);
+        // Update verified skills based on what is in local storage
+        const storedVerifiedSkills = JSON.parse(localStorage.getItem("verifiedSkills")) || [];
+        setVerifiedSkills(storedVerifiedSkills);
       } catch (error) {
         console.error("Error fetching profile data:", error);
       }
     };
 
     fetchProfile();
-  }, []);
+  }, [email]);
 
   if (!profileData || !profileData.skills) {
     return <div>Loading...</div>;
@@ -43,7 +47,7 @@ function Overview() {
   return (
     <DashboardLayout>
       <Header />
-      
+
       <SoftBox mt={5} mb={3}>
         <Grid container spacing={3}>
           <Grid item xs={12} md={6} xl={6}>
@@ -51,6 +55,7 @@ function Overview() {
               title="Skills"
               description="A comprehensive overview of my technical expertise including languages, libraries, and frameworks I frequently use."
               skills={profileData.skills}
+              verifiedSkills={verifiedSkills} // Pass verified skills
               action={{ route: "/edit-skills", tooltip: "Edit Skills" }}
             />
           </Grid>
@@ -75,14 +80,13 @@ function Overview() {
           </SoftBox>
           <SoftBox p={2}>
             <Grid container spacing={3}>
-              {profileData !== null && profileData.projects?.length > 0 ? (
+              {profileData.projects?.length > 0 ? (
                 profileData.projects.map((project, index) => (
                   <Grid item xs={12} md={6} xl={3} key={index}>
                     <DefaultProjectCard
-                      image="https://res.cloudinary.com/dyxnmjtrg/image/upload/v1687757420/aes1_dbwjjp.png" // Provide a placeholder or default image if needed
+                      image="https://res.cloudinary.com/dyxnmjtrg/image/upload/v1687757420/aes1_dbwjjp.png"
                       title={project.title}
                       description={project.description}
-                      // duration={project.duration} // Make sure you pass the duration if it's part of the project data
                       action={{
                         type: "internal",
                         route: "/pages/profile/profile-overview",
