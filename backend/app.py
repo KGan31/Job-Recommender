@@ -88,6 +88,7 @@ def register():
         "password": hashlib.sha256(
             user_details["password"].encode("utf-8")
         ).hexdigest(),
+        "profile_score": 0,
         "github": user_details["github"] if "github" in user_details else "",
         "linkedIn": user_details["linkedIn"] if "linkedIn" in user_details else "",
         "education": user_details["education"] if "education" in user_details else [],
@@ -186,7 +187,7 @@ def add_user_profile(profile_info):
         proj.get("description", "") for proj in profile_info["projects"]
     ]
     work_descriptions = [
-        work.get("description", "") for work in profile_info["experiences"]
+        work.get("job_description", "") for work in profile_info["experiences"]
     ]
     combined_data = (
         "Projects: "
@@ -220,21 +221,32 @@ def add_user_profile(profile_info):
         },
     )
     
-@app.route("/api/get-profile-questions", methods=["POST"])
+@app.route("/api/get-profile-questions", methods=["GET"])
 def get_profile_questions():
-    req = json.loads(request.get_data()) # {"skills": [skill1, skill2, ...]}
-    skills = str(req["skills"])
-    prompt = skills + """\n
+    data_param = request.args.get('data') # {"skills": [skill1, skill2, ...]}
+    if data_param:
+        try:
+            # Decode and parse the JSON string back into a Python object
+            data = json.loads(data_param)
+            skills = data.get('skills', [])
+            # print(skills)
+            skills = str(skills)
+            prompt = skills + """\n
 Based on the given list of skills, give 10 conceptual, medium-level and domain specific questions in single-correct MCQ format for judging how well a person knows each these skills fundamentally, along with their correct answers. Do not give any explanations, just a list of questions in format.
 [
 {question: "question", options: ["A":"option1", "B":"option2"...], correct: ["A"]}
 ]
 Make the order of the options less predictable"""
-    
-    response = model.generate_content(prompt)
-    res = json.loads(response.text)
+            
+            response = model.generate_content(prompt)
+            res = json.loads(response.text)
 
-    return res
+            return res
+        except (json.JSONDecodeError, TypeError) as e:
+            return jsonify({'error': 'Invalid JSON format'}), 400
+    else:
+        return jsonify({'error': 'Missing data'}), 400
+
 
 @app.route("/api/save-profile", methods=["POST"])
 def add_user_skills():
@@ -265,6 +277,17 @@ def get_skill_questions(skill):
 
 
 
+@app.route("/api/update-profile-score", methods=["POST"])
+def update_profile_score():
+    profile_info = json.loads(request.get_data())
+    db.Users.update_one({"email": id}, {"$set": {"profile_score": profile_info['profile_score']}})
+
+    response = app.response_class(
+        response=json.dumps({"message": "Updated user profile"}),
+        status=200,
+        mimetype="application/json",
+    )
+    return response
 
 @app.route("/api/recommend-course", methods=["GET"])
 def getCourses():

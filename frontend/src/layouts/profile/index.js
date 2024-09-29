@@ -11,7 +11,11 @@ import Card from "@mui/material/Card";
 import SoftTypography from "components/SoftTypography";
 import DefaultProjectCard from "examples/Cards/ProjectCards/DefaultProjectCard";
 import PlaceholderCard from "examples/Cards/PlaceholderCard";
-import { useNavigate } from "react-router-dom";
+import ProfileScoreCard from "./components/ProfileScoreCard";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import LinkedInIcon from "@mui/icons-material/LinkedIn";
+import EditIcon from "@mui/icons-material/Edit";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
 const headers = {
   "Access-Control-Allow-Origin": true,
@@ -49,6 +53,86 @@ function Overview() {
       <Header />
 
       <SoftBox mt={5} mb={3}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6} xl={6}>
+            <Card
+              style={{
+                paddingLeft: "1rem",
+                paddingRight: "1rem",
+                paddingTop: "0.75rem",
+                paddingBottom: "0.75rem",
+                height: "100%",
+              }}
+            >
+              <SoftTypography fontWeight="medium" variant="h6">
+                Links
+              </SoftTypography>
+              <div style={{ display: "flex", justifyContent: "space-between", marginTop: "16px" }}>
+                <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                  <GitHubIcon sx={{ width: "18px", height: "18px" }} />
+                  <SoftTypography fontWeight="regular" variant="button" color="text">
+                    Github:
+                  </SoftTypography>
+                  {profileData && profileData.github ? (
+                    <SoftTypography fontWeight="regular" variant="button" color="text">
+                      {profileData.github}
+                    </SoftTypography>
+                  ) : (
+                    <SoftTypography fontWeight="regular" variant="button" color="text">
+                      No link added
+                    </SoftTypography>
+                  )}
+                </div>
+                {profileData && profileData.github ? (
+                  <SoftTypography color="secondary" variant="body">
+                    <EditIcon sx={{ width: "18px", height: "18px", cursor: "pointer" }} />
+                  </SoftTypography>
+                ) : (
+                  <SoftTypography color="secondary" variant="body">
+                    <AddCircleOutlineIcon
+                      sx={{ width: "18px", height: "18px", cursor: "pointer" }}
+                    />
+                  </SoftTypography>
+                )}
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", marginTop: "12px" }}>
+                <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                  <LinkedInIcon sx={{ width: "18px", height: "18px" }} />
+                  <SoftTypography fontWeight="regular" variant="button" color="text">
+                    LinkedIn:
+                  </SoftTypography>
+                  {profileData && profileData.linkedIn ? (
+                    <SoftTypography fontWeight="regular" variant="button" color="text">
+                      {profileData.linkedIn}
+                    </SoftTypography>
+                  ) : (
+                    <SoftTypography fontWeight="regular" variant="button" color="text">
+                      No link added
+                    </SoftTypography>
+                  )}
+                </div>
+                {profileData && profileData.linkedIn ? (
+                  <SoftTypography color="secondary" variant="body">
+                    <EditIcon sx={{ width: "18px", height: "18px", cursor: "pointer" }} />
+                  </SoftTypography>
+                ) : (
+                  <SoftTypography color="secondary" variant="body">
+                    <AddCircleOutlineIcon
+                      sx={{ width: "18px", height: "18px", cursor: "pointer" }}
+                    />
+                  </SoftTypography>
+                )}
+              </div>
+            </Card>
+          </Grid>
+
+          <Grid item xs={12} md={6} xl={6}>
+            <ProfileScoreCard profileData={profileData} />
+          </Grid>
+        </Grid>
+      </SoftBox>
+
+      <SoftBox mt={3} mb={3}>
         <Grid container spacing={3}>
           <Grid item xs={12} md={6} xl={6}>
             <SkillsCard
